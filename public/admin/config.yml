@@ -1,0 +1,121 @@
+# Decap CMS configuration for imancorner.org
+#
+# NOTE: The GitHub backend requires an OAuth provider to log in.
+# GitHub Pages cannot host one, so you must either:
+#   - point `base_url` at a small OAuth gateway you host, or
+#   - use a service that provides Decap GitHub OAuth.
+# See: https://decapcms.org/docs/github-backend/
+backend:
+  name: github
+  repo: asraful/imancorner
+  branch: main
+
+media_folder: public/images/uploads
+public_folder: /images/uploads
+
+# One collection per language. Translations of the same event are linked by
+# giving them the SAME "Translation key" — e.g. an event with translation key
+# `tampere-quran-competition-2026` in Events (English), Events (العربية) and
+# Events (Suomi) is one event shown in three languages.
+collections:
+  - name: events_en
+    label: Events (English)
+    label_singular: English event
+    folder: src/content/events/en
+    create: true
+    slug: '{{fields.translationKey}}'
+    summary: '{{title}} — {{fields.eventDate}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - label: Event date
+        name: eventDate
+        widget: datetime
+        format: 'YYYY-MM-DD'
+        date_format: 'YYYY-MM-DD'
+        time_format: false
+      - { label: Location, name: location, widget: string }
+      - label: Video URL
+        name: videoUrl
+        widget: string
+        required: false
+        hint: 'Embed URL, e.g. https://www.youtube.com/embed/VIDEO_ID. Leave empty if there is no video.'
+      - { label: Tags, name: tags, widget: list, required: false, default: [] }
+      - label: Draft
+        name: isDraft
+        widget: boolean
+        default: false
+        hint: 'Drafts are never published to the website.'
+      - { label: Language, name: language, widget: hidden, default: en }
+      - label: Translation key
+        name: translationKey
+        widget: string
+        hint: 'Shared identifier that links translations of the same event, e.g. tampere-quran-competition-2026. Use exactly the same value in every language. It also becomes the URL of the event.'
+      - { label: Body, name: body, widget: markdown }
+
+  - name: events_ar
+    label: Events (العربية)
+    label_singular: Arabic event
+    folder: src/content/events/ar
+    create: true
+    slug: '{{fields.translationKey}}'
+    summary: '{{title}} — {{fields.eventDate}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - label: Event date
+        name: eventDate
+        widget: datetime
+        format: 'YYYY-MM-DD'
+        date_format: 'YYYY-MM-DD'
+        time_format: false
+      - { label: Location, name: location, widget: string }
+      - label: Video URL
+        name: videoUrl
+        widget: string
+        required: false
+        hint: 'Embed URL, e.g. https://www.youtube.com/embed/VIDEO_ID. Leave empty if there is no video.'
+      - { label: Tags, name: tags, widget: list, required: false, default: [] }
+      - label: Draft
+        name: isDraft
+        widget: boolean
+        default: false
+        hint: 'Drafts are never published to the website.'
+      - { label: Language, name: language, widget: hidden, default: ar }
+      - label: Translation key
+        name: translationKey
+        widget: string
+        hint: 'Use the SAME translation key as the English version of this event so they are linked, e.g. tampere-quran-competition-2026.'
+      - { label: Body, name: body, widget: markdown }
+
+  - name: events_fi
+    label: Events (Suomi)
+    label_singular: Finnish event
+    folder: src/content/events/fi
+    create: true
+    slug: '{{fields.translationKey}}'
+    summary: '{{title}} — {{fields.eventDate}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - label: Event date
+        name: eventDate
+        widget: datetime
+        format: 'YYYY-MM-DD'
+        date_format: 'YYYY-MM-DD'
+        time_format: false
+      - { label: Location, name: location, widget: string }
+      - label: Video URL
+        name: videoUrl
+        widget: string
+        required: false
+        hint: 'Embed URL, e.g. https://www.youtube.com/embed/VIDEO_ID. Leave empty if there is no video.'
+      - { label: Tags, name: tags, widget: list, required: false, default: [] }
+      - label: Draft
+        name: isDraft
+        widget: boolean
+        default: false
+        hint: 'Drafts are never published to the website.'
+      - { label: Language, name: language, widget: hidden, default: fi }
+      - label: Translation key
+        name: translationKey
+        widget: string
+        hint: 'Use the SAME translation key as the English version of this event so they are linked, e.g. tampere-quran-competition-2026.'
+      - { label: Body, name: body, widget: markdown }

@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+import EventCard from '../../components/EventCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  eventPath,
+  formatDate,
+  languageCodes,
+  t,
+  type Language,
+} from '../../i18n';
+
+export function getStaticPaths() {
+  return languageCodes.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Language;
+
+const alternates = Object.fromEntries(
+  languageCodes.map((code) => [code, `/${code}/`]),
+);
+
+const events = (
+  await getCollection(
+    'events',
+    ({ data }) => !data.isDraft && data.language === lang,
+  )
+)
+  .sort((a, b) => a.data.eventDate.getTime() - b.data.eventDate.getTime())
+  .slice(0, 3);
+---
+
+<BaseLayout
+  lang={lang}
+  title={t(lang, 'site.name')}
+  description={t(lang, 'site.tagline')}
+  alternates={alternates}
+>
+  <section class="hero">
+    <h1 class="decorated">{t(lang, 'site.name')}</h1>
+    <p>{t(lang, 'site.tagline')}</p>
+  </section>
+
+  <section aria-labelledby="events-heading">
+    <h2 id="events-heading">{t(lang, 'events.heading')}</h2>
+    {
+      events.length > 0 ? (
+        <ul class="event-grid">
+          {events.map((event) => (
+            <EventCard
+              title={event.data.title}
+              url={eventPath(lang, event.data.translationKey)}
+              dateISO={event.data.eventDate.toISOString().slice(0, 10)}
+              dateFormatted={formatDate(event.data.eventDate, lang)}
+              location={event.data.location}
+              tags={event.data.tags}
+            />
+          ))}
+        </ul>
+      ) : (
+        <p>{t(lang, 'events.none')}</p>
+      )
+    }
+    <p><a href={`/${lang}/events/`}>{t(lang, 'events.viewAll')}</a></p>
+  </section>
+</BaseLayout>

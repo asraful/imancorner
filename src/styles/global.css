@@ -1,0 +1,398 @@
+/* ============================================================
+   THEME — edit this block to restyle the entire site.
+   All components reference these semantic variables only.
+   ============================================================ */
+:root {
+  --color-primary: #3f6f4a;
+  --color-primary-dark: #285238;
+  --color-primary-light: #e8f0e8;
+
+  --color-accent: #c9a85c;
+  --color-accent-light: #f4ecd8;
+
+  --color-background: #fcfbf7;
+  --color-surface: #ffffff;
+
+  --color-text: #26332a;
+  --color-text-muted: #5c675f;
+
+  --color-border: #dfe4df;
+
+  --font-body:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  --font-arabic:
+    'Geeza Pro', 'Segoe UI', 'Noto Naskh Arabic', 'Traditional Arabic', Tahoma,
+    system-ui, sans-serif;
+
+  --radius: 6px;
+  --content-width: 62rem;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--color-text);
+  background: var(--color-background);
+  text-align: start;
+}
+
+/* Arabic: friendlier script stack, slightly larger and looser for readability */
+:lang(ar) {
+  font-family: var(--font-arabic);
+  font-size: 1.0625rem;
+  line-height: 1.85;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+  color: var(--color-primary-dark);
+  margin-block: 0 0.5em;
+}
+
+h1 {
+  font-size: clamp(1.75rem, 4vw, 2.375rem);
+}
+
+h2 {
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+}
+
+h3 {
+  font-size: 1.15rem;
+}
+
+p {
+  margin-block: 0 1em;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary-dark);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+img,
+iframe {
+  max-width: 100%;
+}
+
+[x-cloak] {
+  display: none !important;
+}
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: 0.5rem;
+  inset-block-start: -3rem;
+  padding: 0.5rem 1rem;
+  background: var(--color-primary-dark);
+  color: #fff;
+  border-radius: var(--radius);
+  z-index: 10;
+}
+
+.skip-link:focus {
+  inset-block-start: 0.5rem;
+}
+
+/* ============================================================
+   Layout chrome
+   ============================================================ */
+.wrap {
+  max-width: var(--content-width);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+.site-header {
+  background: var(--color-surface);
+  /* thin gold line — subtle Islamic-inspired accent */
+  border-block-end: 2px solid var(--color-accent);
+}
+
+.site-header .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  padding-block: 0.9rem;
+}
+
+.site-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--color-primary-dark);
+  text-decoration: none;
+}
+
+.site-nav {
+  display: flex;
+  gap: 1.25rem;
+  margin-inline-end: auto;
+}
+
+.site-nav a {
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.site-nav a[aria-current='page'] {
+  color: var(--color-primary-dark);
+  border-block-end: 2px solid var(--color-accent);
+}
+
+.lang-switcher ul {
+  display: flex;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lang-switcher a {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.lang-switcher a[aria-current='page'] {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+main {
+  padding-block: 2.5rem 3.5rem;
+}
+
+.site-footer {
+  background: var(--color-primary-dark);
+  color: var(--color-primary-light);
+  padding-block: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.site-footer a {
+  color: inherit;
+}
+
+/* ============================================================
+   Hero / section headings
+   ============================================================ */
+.hero {
+  padding-block-end: 2rem;
+  margin-block-end: 2.5rem;
+  border-block-end: 1px solid var(--color-border);
+}
+
+.hero p {
+  font-size: 1.15rem;
+  color: var(--color-text-muted);
+  max-width: 40rem;
+}
+
+/* short decorative rule under main headings */
+.decorated::after {
+  content: '';
+  display: block;
+  inline-size: 3.5rem;
+  block-size: 3px;
+  margin-block-start: 0.6rem;
+  background: linear-gradient(
+    to right,
+    var(--color-accent),
+    var(--color-accent-light)
+  );
+  border-radius: 2px;
+}
+
+[dir='rtl'] .decorated::after {
+  background: linear-gradient(
+    to left,
+    var(--color-accent),
+    var(--color-accent-light)
+  );
+}
+
+/* ============================================================
+   Event cards
+   ============================================================ */
+.event-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+}
+
+.event-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-block-start: 3px solid var(--color-primary);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem;
+}
+
+.event-card h3 {
+  margin-block-end: 0.35rem;
+}
+
+.event-card h3 a {
+  text-decoration: none;
+  color: var(--color-primary-dark);
+}
+
+.event-card h3 a:hover {
+  text-decoration: underline;
+}
+
+.event-meta {
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+  margin-block-end: 0.6rem;
+}
+
+.tag-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.8rem;
+  border-radius: 999px;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+/* ============================================================
+   Listing filters
+   ============================================================ */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-block-end: 1.75rem;
+}
+
+.filters label {
+  font-weight: 600;
+}
+
+.filters input[type='search'] {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  font: inherit;
+  min-inline-size: 16rem;
+}
+
+.tag-filter,
+.reset-button {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.tag-filter[aria-pressed='true'] {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.tag-filter:hover,
+.reset-button:hover {
+  border-color: var(--color-primary);
+}
+
+.no-results {
+  color: var(--color-text-muted);
+  padding-block: 1rem;
+}
+
+/* ============================================================
+   Event detail
+   ============================================================ */
+.event-detail-meta {
+  display: grid;
+  gap: 0.35rem;
+  margin-block: 1rem 1.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-inline-start: 3px solid var(--color-accent);
+  border-radius: var(--radius);
+}
+
+.event-detail-meta dt {
+  font-weight: 600;
+  color: var(--color-primary-dark);
+}
+
+.event-detail-meta dd {
+  margin: 0 0 0.5rem;
+}
+
+.video-wrapper {
+  aspect-ratio: 16 / 9;
+  margin-block: 1.5rem;
+}
+
+.video-wrapper iframe {
+  inline-size: 100%;
+  block-size: 100%;
+  border: 0;
+  border-radius: var(--radius);
+}
+
+.back-link {
+  display: inline-block;
+  margin-block-start: 2rem;
+}
+
+.prose {
+  max-width: 44rem;
+}

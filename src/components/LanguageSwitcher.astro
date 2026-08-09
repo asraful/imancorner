@@ -1,0 +1,34 @@
+---
+import { languageCodes, languages, t, type Language } from '../i18n';
+
+interface Props {
+  lang: Language;
+  /** Path of this page in each language it exists in (including the current one). */
+  alternates: Partial<Record<Language, string>>;
+}
+
+const { lang, alternates } = Astro.props;
+
+const links = languageCodes
+  .filter((code) => alternates[code])
+  .map((code) => ({ code, label: languages[code], href: alternates[code]! }));
+---
+
+<nav class="lang-switcher" aria-label={t(lang, 'langSwitcher.label')}>
+  <ul>
+    {
+      links.map(({ code, label, href }) => (
+        <li>
+          <a
+            href={href}
+            lang={code}
+            dir={code === 'ar' ? 'rtl' : 'ltr'}
+            aria-current={code === lang ? 'page' : undefined}
+          >
+            {label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

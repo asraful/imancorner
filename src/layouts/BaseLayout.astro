@@ -1,0 +1,81 @@
+---
+import LanguageSwitcher from '../components/LanguageSwitcher.astro';
+import { defaultLanguage, dirFor, t, type Language } from '../i18n';
+import '../styles/global.css';
+
+interface Props {
+  lang: Language;
+  title: string;
+  description: string;
+  /** Path of this page in each language it exists in (including the current one). */
+  alternates?: Partial<Record<Language, string>>;
+}
+
+const { lang, title, description, alternates = {} } = Astro.props;
+
+const siteName = t(lang, 'site.name');
+const fullTitle = title === siteName ? title : `${title} · ${siteName}`;
+
+const site = Astro.site!;
+const hreflangLinks = (Object.entries(alternates) as [Language, string][]).map(
+  ([code, path]) => ({ code, href: new URL(path, site).href }),
+);
+const xDefaultPath = alternates[defaultLanguage];
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang={lang} dir={dirFor(lang)}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, site).href} />
+    {
+      hreflangLinks.length > 1 &&
+        hreflangLinks.map(({ code, href }) => (
+          <link rel="alternate" hreflang={code} href={href} />
+        ))
+    }
+    {
+      hreflangLinks.length > 1 && xDefaultPath && (
+        <link
+          rel="alternate"
+          hreflang="x-default"
+          href={new URL(xDefaultPath, site).href}
+        />
+      )
+    }
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t(lang, 'skipLink')}</a>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="site-title" href={`/${lang}/`}>{siteName}</a>
+        <nav class="site-nav" aria-label={siteName}>
+          <a
+            href={`/${lang}/events/`}
+            aria-current={
+              Astro.url.pathname.startsWith(`/${lang}/events`)
+                ? 'page'
+                : undefined
+            }
+          >
+            {t(lang, 'nav.events')}
+          </a>
+        </nav>
+        <LanguageSwitcher lang={lang} alternates={alternates} />
+      </div>
+    </header>
+    <main id="main" class="wrap">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>© {year} {siteName}</p>
+      </div>
+    </footer>
+  </body>
+</html>

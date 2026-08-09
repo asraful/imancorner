@@ -1,0 +1,30 @@
+---
+interface Props {
+  title: string;
+  url: string;
+  dateISO: string;
+  dateFormatted: string;
+  location: string;
+  tags: string[];
+}
+
+const { title, url, dateISO, dateFormatted, location, tags } = Astro.props;
+---
+
+<li>
+  <article class="event-card">
+    <h3><a href={url}>{title}</a></h3>
+    <p class="event-meta">
+      <time datetime={dateISO}>{dateFormatted}</time> · {location}
+    </p>
+    {
+      tags.length > 0 && (
+        <ul class="tag-list">
+          {tags.map((tag) => (
+            <li class="tag">{tag}</li>
+          ))}
+        </ul>
+      )
+    }
+  </article>
+</li>

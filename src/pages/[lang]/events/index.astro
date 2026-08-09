@@ -1,0 +1,149 @@
+---
+import { getCollection } from 'astro:content';
+import EventCard from '../../../components/EventCard.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import {
+  eventPath,
+  formatDate,
+  languageCodes,
+  t,
+  type Language,
+} from '../../../i18n';
+import type { EventListItem } from '../../../scripts/alpine';
+
+export function getStaticPaths() {
+  return languageCodes.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Language;
+
+const alternates = Object.fromEntries(
+  languageCodes.map((code) => [code, `/${code}/events/`]),
+);
+
+const events = (
+  await getCollection(
+    'events',
+    ({ data }) => !data.isDraft && data.language === lang,
+  )
+).sort((a, b) => a.data.eventDate.getTime() - b.data.eventDate.getTime());
+
+const items: EventListItem[] = events.map((event) => ({
+  title: event.data.title,
+  url: eventPath(lang, event.data.translationKey),
+  location: event.data.location,
+  tags: event.data.tags,
+  dateISO: event.data.eventDate.toISOString().slice(0, 10),
+  dateFormatted: formatDate(event.data.eventDate, lang),
+}));
+
+const allTags = [...new Set(events.flatMap((event) => event.data.tags))].sort();
+
+// <-escape so the JSON can never close its own <script> tag
+const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
+---
+
+<BaseLayout
+  lang={lang}
+  title={t(lang, 'events.heading')}
+  description={t(lang, 'site.tagline')}
+  alternates={alternates}
+>
+  <h1 class="decorated">{t(lang, 'events.heading')}</h1>
+
+  {
+    items.length === 0 ? (
+      <p>{t(lang, 'events.none')}</p>
+    ) : (
+      <section x-data="eventList">
+        <form class="filters" role="search" @submit.prevent="">
+          <label for="event-search">{t(lang, 'events.searchLabel')}</label>
+          <input
+            type="search"
+            id="event-search"
+            x-model="search"
+            placeholder={t(lang, 'events.searchPlaceholder')}
+          />
+          <button
+            type="button"
+            class="reset-button"
+            x-show="hasFilters"
+            x-cloak
+            @click="reset()"
+          >
+            {t(lang, 'events.reset')}
+          </button>
+        </form>
+
+        {allTags.length > 0 && (
+          <div
+            class="filters"
+            role="group"
+            aria-label={t(lang, 'events.filterByTag')}
+          >
+            {allTags.map((tag) => (
+              <button
+                type="button"
+                class="tag-filter"
+                aria-pressed="false"
+                @click={`toggleTag(${JSON.stringify(tag)})`}
+                :aria-pressed={`(activeTag === ${JSON.stringify(tag)}).toString()`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <ul class="event-grid">
+          <template x-for="event in filteredEvents" x-bind:key="event.url">
+            <li>
+              <article class="event-card">
+                <h3>
+                  <a x-bind:href="event.url" x-text="event.title" />
+                </h3>
+                <p class="event-meta">
+                  <time
+                    x-bind:datetime="event.dateISO"
+                    x-text="event.dateFormatted"
+                  />
+                  <span aria-hidden="true">·</span>
+                  <span x-text="event.location" />
+                </p>
+                <ul class="tag-list">
+                  <template x-for="tag in event.tags" x-bind:key="tag">
+                    <li class="tag" x-text="tag" />
+                  </template>
+                </ul>
+              </article>
+            </li>
+          </template>
+        </ul>
+
+        <p
+          class="no-results"
+          x-show="filteredEvents.length === 0"
+          x-cloak
+          aria-live="polite"
+        >
+          {t(lang, 'events.noResults')}
+        </p>
+
+        <noscript>
+          <ul class="event-grid">
+            {items.map((item) => (
+              <EventCard {...item} />
+            ))}
+          </ul>
+        </noscript>
+
+        <script
+          type="application/json"
+          id="event-data"
+          set:html={itemsJson}
+          is:inline
+        ></script>
+      </section>
+    )
+  }
+</BaseLayout>

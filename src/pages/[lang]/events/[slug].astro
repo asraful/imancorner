@@ -1,0 +1,85 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { eventPath, formatDate, t, type Language } from '../../../i18n';
+
+export async function getStaticPaths() {
+  const events = await getCollection('events', ({ data }) => !data.isDraft);
+
+  return events.map((entry) => {
+    const alternates = Object.fromEntries(
+      events
+        .filter((e) => e.data.translationKey === entry.data.translationKey)
+        .map((e) => [e.data.language, eventPath(e.data.language, e.data.translationKey)]),
+    ) as Partial<Record<Language, string>>;
+
+    return {
+      params: { lang: entry.data.language, slug: entry.data.translationKey },
+      props: { entry, alternates },
+    };
+  });
+}
+
+const { entry, alternates } = Astro.props;
+const lang = entry.data.language;
+const { title, eventDate, location, tags, videoUrl } = entry.data;
+
+const { Content } = await render(entry);
+
+const dateFormatted = formatDate(eventDate, lang);
+const description = `${title} — ${dateFormatted}, ${location}`;
+---
+
+<BaseLayout
+  lang={lang}
+  title={title}
+  description={description}
+  alternates={alternates}
+>
+  <article>
+    <h1 class="decorated">{title}</h1>
+
+    <dl class="event-detail-meta">
+      <dt>{t(lang, 'event.date')}</dt>
+      <dd>
+        <time datetime={eventDate.toISOString().slice(0, 10)}>
+          {dateFormatted}
+        </time>
+      </dd>
+      <dt>{t(lang, 'event.location')}</dt>
+      <dd>{location}</dd>
+    </dl>
+
+    {
+      tags.length > 0 && (
+        <ul class="tag-list">
+          {tags.map((tag) => (
+            <li class="tag">{tag}</li>
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      videoUrl && (
+        <div class="video-wrapper">
+          <iframe
+            src={videoUrl}
+            title={`${t(lang, 'event.video')}: ${title}`}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+          />
+        </div>
+      )
+    }
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+
+  <a class="back-link" href={`/${lang}/events/`}>
+    {t(lang, 'event.backToEvents')}
+  </a>
+</BaseLayout>

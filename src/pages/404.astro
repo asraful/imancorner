@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { defaultLanguage } from '../i18n';
+---
+
+<BaseLayout
+  lang={defaultLanguage}
+  title="Page not found"
+  description="The page you were looking for does not exist."
+>
+  <h1 class="decorated">Page not found</h1>
+  <p>The page you were looking for does not exist or may have moved.</p>
+  <p><a href="/en/">Go to the homepage</a></p>
+</BaseLayout>
