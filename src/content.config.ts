@@ -17,4 +17,17 @@ const events = defineCollection({
   }),
 });
 
-export const collections = { events };
+const pages = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/pages' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    showInNav: z.boolean().default(false),
+    navOrder: z.number().default(0),
+    isDraft: z.boolean().default(false),
+    language: z.enum(languageCodes),
+    translationKey: z.string(),
+  }),
+});
+
+export const collections = { events, pages };

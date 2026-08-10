@@ -1,0 +1,50 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { pagePath, type Language } from '../../i18n';
+
+export async function getStaticPaths() {
+  // Slugs already taken by built-in routes; a page with one of these
+  // translation keys would shadow them, so it is skipped.
+  const reserved = new Set(['events']);
+
+  const pages = await getCollection(
+    'pages',
+    ({ data }) => !data.isDraft && !reserved.has(data.translationKey),
+  );
+
+  return pages.map((entry) => {
+    const alternates = Object.fromEntries(
+      pages
+        .filter((p) => p.data.translationKey === entry.data.translationKey)
+        .map((p) => [p.data.language, pagePath(p.data.language, p.data.translationKey)]),
+    ) as Partial<Record<Language, string>>;
+
+    return {
+      params: { lang: entry.data.language, slug: entry.data.translationKey },
+      props: { entry, alternates },
+    };
+  });
+}
+
+const { entry, alternates } = Astro.props;
+const lang = entry.data.language;
+const { title, description } = entry.data;
+
+const { Content } = await render(entry);
+---
+
+<BaseLayout
+  lang={lang}
+  title={title}
+  description={description ?? title}
+  alternates={alternates}
+>
+  <article>
+    <h1 class="decorated">{title}</h1>
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

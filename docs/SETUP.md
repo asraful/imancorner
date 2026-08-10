@@ -45,11 +45,17 @@ The project spans **two intentionally separate repositories**:
 
 ### Content model
 
-Events live in `src/content/events/<lang>/<translationKey>.md`. Translations of the same event
-share the **same `translationKey`** (which is also the filename and the URL slug) — that's how
-the language switcher links them. Frontmatter fields: `title`, `eventDate`, `location`,
-`videoUrl` (optional embed URL), `tags`, `isDraft` (drafts are never published), `language`,
-`translationKey`.
+**Events** live in `src/content/events/<lang>/<translationKey>.md`. Translations of the same
+event share the **same `translationKey`** (which is also the filename and the URL slug) — that's
+how the language switcher links them. Frontmatter fields: `title`, `eventDate`, `location`,
+`videoUrl` (any YouTube link — normalized to the embed form at build time), `tags`, `isDraft`
+(drafts are never published), `language`, `translationKey`.
+
+**Pages** (About, Contact, …) live in `src/content/pages/<lang>/<translationKey>.md` and are
+published at `/<lang>/<translationKey>/` by `src/pages/[lang]/[slug].astro`. Same translation-key
+model as events. Extra frontmatter: `description` (SEO, optional), `showInNav` (adds the page to
+the header menu), `navOrder` (menu position, lower first). The translation key `events` is
+reserved. A draft example lives at `src/content/pages/en/example-page.md`.
 
 ## Hosting & deployment
 
@@ -132,7 +138,14 @@ To redeploy the worker: clone `sveltia/sveltia-cms-auth`, add the `[vars]` to `w
 5. Repeat in **Events (العربية)** / **Events (Suomi)** with the **same translation key**
 6. Use the **Draft** toggle to keep an entry off the live site
 
-Alternative without the CMS: edit the markdown files under `src/content/events/` directly on
+### Creating a standalone page
+
+Same flow via **Pages (English / العربية / Suomi)** in the admin: title, optional description,
+a **Translation key** (becomes the URL, e.g. `about` → `/en/about/`), and the body in markdown.
+Turn on **Show in menu** to add it to the header navigation; **Menu order** controls its
+position. Create the same translation key in each language to link them.
+
+Alternative without the CMS: edit the markdown files under `src/content/` directly on
 github.com — same result.
 
 ## Local development

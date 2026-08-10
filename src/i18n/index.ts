@@ -89,3 +89,8 @@ export function formatDate(date: Date, lang: Language): string {
 export function eventPath(lang: Language, translationKey: string): string {
   return `/${lang}/events/${translationKey}/`;
 }
+
+/** Path of a standalone page, e.g. pagePath('fi', 'about') → /fi/about/ */
+export function pagePath(lang: Language, translationKey: string): string {
+  return `/${lang}/${translationKey}/`;
+}

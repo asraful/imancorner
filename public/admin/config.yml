@@ -120,3 +120,116 @@ collections:
         widget: string
         hint: 'Use the SAME translation key as the English version of this event so they are linked, e.g. tampere-quran-competition-2026.'
       - { label: Body, name: body, widget: markdown }
+
+  # Standalone pages (About, Contact, …) published at /<language>/<translation key>/.
+  # "Show in menu" adds the page to the header navigation.
+  - name: pages_en
+    label: Pages (English)
+    label_singular: English page
+    folder: src/content/pages/en
+    create: true
+    slug: '{{fields.translationKey}}'
+    summary: '{{title}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - label: Description
+        name: description
+        widget: string
+        required: false
+        hint: 'Short summary used by search engines. Optional.'
+      - label: Show in menu
+        name: showInNav
+        widget: boolean
+        default: false
+        hint: 'Adds this page to the site header navigation.'
+      - label: Menu order
+        name: navOrder
+        widget: number
+        value_type: int
+        default: 0
+        hint: 'Lower numbers appear first in the menu.'
+      - label: Draft
+        name: isDraft
+        widget: boolean
+        default: false
+        hint: 'Drafts are never published to the website.'
+      - { label: Language, name: language, widget: hidden, default: en }
+      - label: Translation key
+        name: translationKey
+        widget: string
+        hint: 'Becomes the URL of the page, e.g. about → imancorner.org/en/about/. Use exactly the same value in every language. Cannot be "events".'
+      - { label: Body, name: body, widget: markdown }
+
+  - name: pages_ar
+    label: Pages (العربية)
+    label_singular: Arabic page
+    folder: src/content/pages/ar
+    create: true
+    slug: '{{fields.translationKey}}'
+    summary: '{{title}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - label: Description
+        name: description
+        widget: string
+        required: false
+        hint: 'Short summary used by search engines. Optional.'
+      - label: Show in menu
+        name: showInNav
+        widget: boolean
+        default: false
+        hint: 'Adds this page to the site header navigation.'
+      - label: Menu order
+        name: navOrder
+        widget: number
+        value_type: int
+        default: 0
+        hint: 'Lower numbers appear first in the menu.'
+      - label: Draft
+        name: isDraft
+        widget: boolean
+        default: false
+        hint: 'Drafts are never published to the website.'
+      - { label: Language, name: language, widget: hidden, default: ar }
+      - label: Translation key
+        name: translationKey
+        widget: string
+        hint: 'Use the SAME translation key as the English version of this page so they are linked, e.g. about. Cannot be "events".'
+      - { label: Body, name: body, widget: markdown }
+
+  - name: pages_fi
+    label: Pages (Suomi)
+    label_singular: Finnish page
+    folder: src/content/pages/fi
+    create: true
+    slug: '{{fields.translationKey}}'
+    summary: '{{title}}'
+    fields:
+      - { label: Title, name: title, widget: string }
+      - label: Description
+        name: description
+        widget: string
+        required: false
+        hint: 'Short summary used by search engines. Optional.'
+      - label: Show in menu
+        name: showInNav
+        widget: boolean
+        default: false
+        hint: 'Adds this page to the site header navigation.'
+      - label: Menu order
+        name: navOrder
+        widget: number
+        value_type: int
+        default: 0
+        hint: 'Lower numbers appear first in the menu.'
+      - label: Draft
+        name: isDraft
+        widget: boolean
+        default: false
+        hint: 'Drafts are never published to the website.'
+      - { label: Language, name: language, widget: hidden, default: fi }
+      - label: Translation key
+        name: translationKey
+        widget: string
+        hint: 'Use the SAME translation key as the English version of this page so they are linked, e.g. about. Cannot be "events".'
+      - { label: Body, name: body, widget: markdown }
