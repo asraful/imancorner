@@ -45,17 +45,21 @@ The project spans **two intentionally separate repositories**:
 
 ### Content model
 
-**Events** live in `src/content/events/<lang>/<translationKey>.md`. Translations of the same
-event share the **same `translationKey`** (which is also the filename and the URL slug) — that's
-how the language switcher links them. Frontmatter fields: `title`, `eventDate`, `location`,
-`videoUrl` (any YouTube link — normalized to the embed form at build time), `tags`, `isDraft`
-(drafts are never published), `language`, `translationKey`.
+An entry's **language and URL slug are derived from its file path** —
+`src/content/<collection>/<language>/<slug>.md` (see `entryLanguage()`/`entryKey()` in
+`src/i18n`). Files with the same name in different language folders are translations of one
+another; that's how the language switcher and hreflang links connect them. Neither value is
+frontmatter.
 
-**Pages** (About, Contact, …) live in `src/content/pages/<lang>/<translationKey>.md` and are
-published at `/<lang>/<translationKey>/` by `src/pages/[lang]/[slug].astro`. Same translation-key
-model as events. Extra frontmatter: `description` (SEO, optional), `showInNav` (adds the page to
-the header menu), `navOrder` (menu position, lower first). The translation key `events` is
-reserved. A draft example lives at `src/content/pages/en/example-page.md`.
+**Events** (`src/content/events/`) frontmatter: `title`, `eventDate`, `location`, `videoUrl`
+(any YouTube link — normalized to the embed form at build time), `tags`, `isDraft` (drafts are
+never published).
+
+**Pages** (About, Contact, …; `src/content/pages/`) are published at `/<lang>/<slug>/` by
+`src/pages/[lang]/[slug].astro`. Frontmatter: `title`, `description` (SEO, optional),
+`showInNav` (adds the page to the header menu), `navOrder` (menu position, lower first),
+`isDraft`. The slug `events` is reserved. A draft example lives at
+`src/content/pages/en/example-page.md`.
 
 ## Hosting & deployment
 
@@ -130,20 +134,23 @@ To redeploy the worker: clone `sveltia/sveltia-cms-auth`, add the `[vars]` to `w
 
 ### Posting an event
 
+The admin uses Decap's i18n mode: **one Events collection, one entry per event**, with all
+three languages edited together.
+
 1. Go to [imancorner.org/admin](https://imancorner.org/admin/) → **Login with GitHub**
-2. Pick **Events (English)** → **New English event**
-3. Fill in title, date, location, optional video embed URL, and a **Translation key**
-   (e.g. `eid-gathering-2026` — becomes the URL; lowercase, hyphens, no spaces)
-4. **Publish** — live in ~2 minutes
-5. Repeat in **Events (العربية)** / **Events (Suomi)** with the **same translation key**
+2. **Events** → **New event**
+3. Fill in title, date, location, optional video URL (any YouTube link), tags
+4. Switch language with the **locale dropdown at the top of the editor** and fill in the
+   Arabic and Finnish translations (title, location, body; date/video/draft are shared)
+5. **Publish** — live in ~2 minutes. The URL slug comes from the English title.
 6. Use the **Draft** toggle to keep an entry off the live site
 
 ### Creating a standalone page
 
-Same flow via **Pages (English / العربية / Suomi)** in the admin: title, optional description,
-a **Translation key** (becomes the URL, e.g. `about` → `/en/about/`), and the body in markdown.
-Turn on **Show in menu** to add it to the header navigation; **Menu order** controls its
-position. Create the same translation key in each language to link them.
+Same flow via **Pages** in the admin: title, optional description, body in markdown, with
+translations in the same entry via the locale dropdown. Turn on **Show in menu** to add it to
+the header navigation; **Menu order** controls its position. The page is published at
+`/<lang>/<slug>/` where the slug comes from the English title.
 
 Alternative without the CMS: edit the markdown files under `src/content/` directly on
 github.com — same result.

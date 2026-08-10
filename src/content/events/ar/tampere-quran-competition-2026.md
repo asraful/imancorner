@@ -7,8 +7,6 @@ tags:
   - Quran
   - Community
 isDraft: false
-language: ar
-translationKey: tampere-quran-competition-2026
 ---
 
 مسابقة مجتمعية للقرآن الكريم تُقام في مدينة تامبيري.

@@ -1,7 +1,10 @@
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { defineCollection } from 'astro:content';
-import { languageCodes } from './i18n';
+
+// An entry's language and translation key are not frontmatter: both are
+// derived from its path (src/content/<collection>/<language>/<key>.md) via
+// entryLanguage()/entryKey() in src/i18n.
 
 const events = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/events' }),
@@ -12,8 +15,6 @@ const events = defineCollection({
     videoUrl: z.string().url().optional(),
     tags: z.array(z.string()).default([]),
     isDraft: z.boolean().default(false),
-    language: z.enum(languageCodes),
-    translationKey: z.string(),
   }),
 });
 
@@ -25,8 +26,6 @@ const pages = defineCollection({
     showInNav: z.boolean().default(false),
     navOrder: z.number().default(0),
     isDraft: z.boolean().default(false),
-    language: z.enum(languageCodes),
-    translationKey: z.string(),
   }),
 });
 

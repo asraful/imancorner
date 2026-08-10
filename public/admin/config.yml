@@ -1,10 +1,7 @@
 # Decap CMS configuration for imancorner.org
 #
-# NOTE: The GitHub backend requires an OAuth provider to log in.
-# GitHub Pages cannot host one, so you must either:
-#   - point `base_url` at a small OAuth gateway you host, or
-#   - use a service that provides Decap GitHub OAuth.
-# See: https://decapcms.org/docs/github-backend/
+# The GitHub backend logs in through the sveltia-cms-auth OAuth gateway
+# (Cloudflare Worker) referenced by base_url below.
 backend:
   name: github
   repo: asraful/imancorner
@@ -14,222 +11,83 @@ backend:
 media_folder: public/images/uploads
 public_folder: /images/uploads
 
-# One collection per language. Translations of the same event are linked by
-# giving them the SAME "Translation key" — e.g. an event with translation key
-# `tampere-quran-competition-2026` in Events (English), Events (العربية) and
-# Events (Suomi) is one event shown in three languages.
+# All content is trilingual. Each collection is a single list of entries; the
+# editor shows a language switcher (EN / AR / FI) so every translation is
+# written in one place, and each language is saved to its own folder
+# (e.g. src/content/events/ar/<entry>.md). Translations of one entry share the
+# filename, which is also the URL slug — derived from the English title.
+i18n:
+  structure: multiple_folders
+  locales: [en, ar, fi]
+  default_locale: en
+
 collections:
-  - name: events_en
-    label: Events (English)
-    label_singular: English event
-    folder: src/content/events/en
+  - name: events
+    label: Events
+    label_singular: event
+    folder: src/content/events
+    i18n: true
     create: true
-    slug: '{{fields.translationKey}}'
     summary: '{{title}} — {{fields.eventDate}}'
     fields:
-      - { label: Title, name: title, widget: string }
+      - { label: Title, name: title, widget: string, i18n: true }
       - label: Event date
         name: eventDate
         widget: datetime
         format: 'YYYY-MM-DD'
         date_format: 'YYYY-MM-DD'
         time_format: false
-      - { label: Location, name: location, widget: string }
+        i18n: duplicate
+      - { label: Location, name: location, widget: string, i18n: true }
       - label: Video URL
         name: videoUrl
         widget: string
         required: false
+        i18n: duplicate
         hint: 'Any YouTube link works — watch, share (youtu.be) or embed URL. Leave empty if there is no video.'
-      - { label: Tags, name: tags, widget: list, required: false, default: [] }
+      - { label: Tags, name: tags, widget: list, required: false, default: [], i18n: true }
       - label: Draft
         name: isDraft
         widget: boolean
         default: false
+        i18n: duplicate
         hint: 'Drafts are never published to the website.'
-      - { label: Language, name: language, widget: hidden, default: en }
-      - label: Translation key
-        name: translationKey
-        widget: string
-        hint: 'Shared identifier that links translations of the same event, e.g. tampere-quran-competition-2026. Use exactly the same value in every language. It also becomes the URL of the event.'
-      - { label: Body, name: body, widget: markdown }
+      - { label: Body, name: body, widget: markdown, i18n: true }
 
-  - name: events_ar
-    label: Events (العربية)
-    label_singular: Arabic event
-    folder: src/content/events/ar
-    create: true
-    slug: '{{fields.translationKey}}'
-    summary: '{{title}} — {{fields.eventDate}}'
-    fields:
-      - { label: Title, name: title, widget: string }
-      - label: Event date
-        name: eventDate
-        widget: datetime
-        format: 'YYYY-MM-DD'
-        date_format: 'YYYY-MM-DD'
-        time_format: false
-      - { label: Location, name: location, widget: string }
-      - label: Video URL
-        name: videoUrl
-        widget: string
-        required: false
-        hint: 'Any YouTube link works — watch, share (youtu.be) or embed URL. Leave empty if there is no video.'
-      - { label: Tags, name: tags, widget: list, required: false, default: [] }
-      - label: Draft
-        name: isDraft
-        widget: boolean
-        default: false
-        hint: 'Drafts are never published to the website.'
-      - { label: Language, name: language, widget: hidden, default: ar }
-      - label: Translation key
-        name: translationKey
-        widget: string
-        hint: 'Use the SAME translation key as the English version of this event so they are linked, e.g. tampere-quran-competition-2026.'
-      - { label: Body, name: body, widget: markdown }
-
-  - name: events_fi
-    label: Events (Suomi)
-    label_singular: Finnish event
-    folder: src/content/events/fi
-    create: true
-    slug: '{{fields.translationKey}}'
-    summary: '{{title}} — {{fields.eventDate}}'
-    fields:
-      - { label: Title, name: title, widget: string }
-      - label: Event date
-        name: eventDate
-        widget: datetime
-        format: 'YYYY-MM-DD'
-        date_format: 'YYYY-MM-DD'
-        time_format: false
-      - { label: Location, name: location, widget: string }
-      - label: Video URL
-        name: videoUrl
-        widget: string
-        required: false
-        hint: 'Any YouTube link works — watch, share (youtu.be) or embed URL. Leave empty if there is no video.'
-      - { label: Tags, name: tags, widget: list, required: false, default: [] }
-      - label: Draft
-        name: isDraft
-        widget: boolean
-        default: false
-        hint: 'Drafts are never published to the website.'
-      - { label: Language, name: language, widget: hidden, default: fi }
-      - label: Translation key
-        name: translationKey
-        widget: string
-        hint: 'Use the SAME translation key as the English version of this event so they are linked, e.g. tampere-quran-competition-2026.'
-      - { label: Body, name: body, widget: markdown }
-
-  # Standalone pages (About, Contact, …) published at /<language>/<translation key>/.
+  # Standalone pages (About, Contact, …) published at /<language>/<slug>/.
   # "Show in menu" adds the page to the header navigation.
-  - name: pages_en
-    label: Pages (English)
-    label_singular: English page
-    folder: src/content/pages/en
+  - name: pages
+    label: Pages
+    label_singular: page
+    folder: src/content/pages
+    i18n: true
     create: true
-    slug: '{{fields.translationKey}}'
     summary: '{{title}}'
     fields:
-      - { label: Title, name: title, widget: string }
+      - { label: Title, name: title, widget: string, i18n: true }
       - label: Description
         name: description
         widget: string
         required: false
+        i18n: true
         hint: 'Short summary used by search engines. Optional.'
       - label: Show in menu
         name: showInNav
         widget: boolean
         default: false
+        i18n: duplicate
         hint: 'Adds this page to the site header navigation.'
       - label: Menu order
         name: navOrder
         widget: number
         value_type: int
         default: 0
+        i18n: duplicate
         hint: 'Lower numbers appear first in the menu.'
       - label: Draft
         name: isDraft
         widget: boolean
         default: false
+        i18n: duplicate
         hint: 'Drafts are never published to the website.'
-      - { label: Language, name: language, widget: hidden, default: en }
-      - label: Translation key
-        name: translationKey
-        widget: string
-        hint: 'Becomes the URL of the page, e.g. about → imancorner.org/en/about/. Use exactly the same value in every language. Cannot be "events".'
-      - { label: Body, name: body, widget: markdown }
-
-  - name: pages_ar
-    label: Pages (العربية)
-    label_singular: Arabic page
-    folder: src/content/pages/ar
-    create: true
-    slug: '{{fields.translationKey}}'
-    summary: '{{title}}'
-    fields:
-      - { label: Title, name: title, widget: string }
-      - label: Description
-        name: description
-        widget: string
-        required: false
-        hint: 'Short summary used by search engines. Optional.'
-      - label: Show in menu
-        name: showInNav
-        widget: boolean
-        default: false
-        hint: 'Adds this page to the site header navigation.'
-      - label: Menu order
-        name: navOrder
-        widget: number
-        value_type: int
-        default: 0
-        hint: 'Lower numbers appear first in the menu.'
-      - label: Draft
-        name: isDraft
-        widget: boolean
-        default: false
-        hint: 'Drafts are never published to the website.'
-      - { label: Language, name: language, widget: hidden, default: ar }
-      - label: Translation key
-        name: translationKey
-        widget: string
-        hint: 'Use the SAME translation key as the English version of this page so they are linked, e.g. about. Cannot be "events".'
-      - { label: Body, name: body, widget: markdown }
-
-  - name: pages_fi
-    label: Pages (Suomi)
-    label_singular: Finnish page
-    folder: src/content/pages/fi
-    create: true
-    slug: '{{fields.translationKey}}'
-    summary: '{{title}}'
-    fields:
-      - { label: Title, name: title, widget: string }
-      - label: Description
-        name: description
-        widget: string
-        required: false
-        hint: 'Short summary used by search engines. Optional.'
-      - label: Show in menu
-        name: showInNav
-        widget: boolean
-        default: false
-        hint: 'Adds this page to the site header navigation.'
-      - label: Menu order
-        name: navOrder
-        widget: number
-        value_type: int
-        default: 0
-        hint: 'Lower numbers appear first in the menu.'
-      - label: Draft
-        name: isDraft
-        widget: boolean
-        default: false
-        hint: 'Drafts are never published to the website.'
-      - { label: Language, name: language, widget: hidden, default: fi }
-      - label: Translation key
-        name: translationKey
-        widget: string
-        hint: 'Use the SAME translation key as the English version of this page so they are linked, e.g. about. Cannot be "events".'
-      - { label: Body, name: body, widget: markdown }
+      - { label: Body, name: body, widget: markdown, i18n: true }

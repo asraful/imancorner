@@ -5,8 +5,6 @@ location: Tampere
 tags:
   - Community
 isDraft: true
-language: en
-translationKey: example-draft-event
 ---
 
 This draft event must never appear on the site. It exists to verify that

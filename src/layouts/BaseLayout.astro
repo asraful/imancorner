@@ -1,7 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
 import LanguageSwitcher from '../components/LanguageSwitcher.astro';
-import { defaultLanguage, dirFor, pagePath, t, type Language } from '../i18n';
+import {
+  defaultLanguage,
+  dirFor,
+  entryKey,
+  entryLanguage,
+  pagePath,
+  t,
+  type Language,
+} from '../i18n';
 import '../styles/global.css';
 
 interface Props {
@@ -27,7 +35,10 @@ const year = new Date().getFullYear();
 const navPages = (
   await getCollection(
     'pages',
-    ({ data }) => data.language === lang && data.showInNav && !data.isDraft,
+    (entry) =>
+      entryLanguage(entry.id) === lang &&
+      entry.data.showInNav &&
+      !entry.data.isDraft,
   )
 ).sort((a, b) => a.data.navOrder - b.data.navOrder);
 ---
@@ -76,9 +87,9 @@ const navPages = (
           {
             navPages.map((page) => (
               <a
-                href={pagePath(lang, page.data.translationKey)}
+                href={pagePath(lang, entryKey(page.id))}
                 aria-current={
-                  Astro.url.pathname === pagePath(lang, page.data.translationKey)
+                  Astro.url.pathname === pagePath(lang, entryKey(page.id))
                     ? 'page'
                     : undefined
                 }

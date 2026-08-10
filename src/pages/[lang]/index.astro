@@ -3,6 +3,8 @@ import { getCollection } from 'astro:content';
 import EventCard from '../../components/EventCard.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import {
+  entryKey,
+  entryLanguage,
   eventPath,
   formatDate,
   languageCodes,
@@ -23,7 +25,7 @@ const alternates = Object.fromEntries(
 const events = (
   await getCollection(
     'events',
-    ({ data }) => !data.isDraft && data.language === lang,
+    (entry) => !entry.data.isDraft && entryLanguage(entry.id) === lang,
   )
 )
   .sort((a, b) => a.data.eventDate.getTime() - b.data.eventDate.getTime())
@@ -49,7 +51,7 @@ const events = (
           {events.map((event) => (
             <EventCard
               title={event.data.title}
-              url={eventPath(lang, event.data.translationKey)}
+              url={eventPath(lang, entryKey(event.id))}
               dateISO={event.data.eventDate.toISOString().slice(0, 10)}
               dateFormatted={formatDate(event.data.eventDate, lang)}
               location={event.data.location}

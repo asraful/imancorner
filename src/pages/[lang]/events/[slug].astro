@@ -1,20 +1,28 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { eventPath, formatDate, t, type Language } from '../../../i18n';
+import {
+  entryKey,
+  entryLanguage,
+  eventPath,
+  formatDate,
+  t,
+  type Language,
+} from '../../../i18n';
 
 export async function getStaticPaths() {
   const events = await getCollection('events', ({ data }) => !data.isDraft);
 
   return events.map((entry) => {
+    const key = entryKey(entry.id);
     const alternates = Object.fromEntries(
       events
-        .filter((e) => e.data.translationKey === entry.data.translationKey)
-        .map((e) => [e.data.language, eventPath(e.data.language, e.data.translationKey)]),
+        .filter((e) => entryKey(e.id) === key)
+        .map((e) => [entryLanguage(e.id), eventPath(entryLanguage(e.id), key)]),
     ) as Partial<Record<Language, string>>;
 
     return {
-      params: { lang: entry.data.language, slug: entry.data.translationKey },
+      params: { lang: entryLanguage(entry.id), slug: key },
       props: { entry, alternates },
     };
   });
@@ -37,7 +45,7 @@ function toEmbedUrl(url: string): string {
 }
 
 const { entry, alternates } = Astro.props;
-const lang = entry.data.language;
+const lang = entryLanguage(entry.id);
 const { title, eventDate, location, tags, videoUrl } = entry.data;
 
 const { Content } = await render(entry);

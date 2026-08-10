@@ -7,8 +7,6 @@ tags:
   - Quran
   - Community
 isDraft: false
-language: en
-translationKey: tampere-quran-competition-2026
 ---
 
 A community Quran competition held in Tampere.

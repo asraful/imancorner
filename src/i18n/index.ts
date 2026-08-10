@@ -94,3 +94,17 @@ export function eventPath(lang: Language, translationKey: string): string {
 export function pagePath(lang: Language, translationKey: string): string {
   return `/${lang}/${translationKey}/`;
 }
+
+/**
+ * Content entries live at src/content/<collection>/<language>/<key>.md, so an
+ * entry's id (e.g. `en/my-event`) encodes both its language and its
+ * translation key. Entries in different languages with the same key are
+ * translations of one another.
+ */
+export function entryLanguage(id: string): Language {
+  return id.split('/')[0] as Language;
+}
+
+export function entryKey(id: string): string {
+  return id.split('/').slice(1).join('/');
+}
