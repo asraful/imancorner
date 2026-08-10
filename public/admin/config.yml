@@ -39,7 +39,7 @@ collections:
         name: videoUrl
         widget: string
         required: false
-        hint: 'Embed URL, e.g. https://www.youtube.com/embed/VIDEO_ID. Leave empty if there is no video.'
+        hint: 'Any YouTube link works — watch, share (youtu.be) or embed URL. Leave empty if there is no video.'
       - { label: Tags, name: tags, widget: list, required: false, default: [] }
       - label: Draft
         name: isDraft
@@ -73,7 +73,7 @@ collections:
         name: videoUrl
         widget: string
         required: false
-        hint: 'Embed URL, e.g. https://www.youtube.com/embed/VIDEO_ID. Leave empty if there is no video.'
+        hint: 'Any YouTube link works — watch, share (youtu.be) or embed URL. Leave empty if there is no video.'
       - { label: Tags, name: tags, widget: list, required: false, default: [] }
       - label: Draft
         name: isDraft
@@ -107,7 +107,7 @@ collections:
         name: videoUrl
         widget: string
         required: false
-        hint: 'Embed URL, e.g. https://www.youtube.com/embed/VIDEO_ID. Leave empty if there is no video.'
+        hint: 'Any YouTube link works — watch, share (youtu.be) or embed URL. Leave empty if there is no video.'
       - { label: Tags, name: tags, widget: list, required: false, default: [] }
       - label: Draft
         name: isDraft

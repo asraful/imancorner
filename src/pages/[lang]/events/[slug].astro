@@ -20,6 +20,22 @@ export async function getStaticPaths() {
   });
 }
 
+/**
+ * YouTube only allows /embed/ URLs inside iframes (X-Frame-Options: sameorigin
+ * on all other pages), but CMS editors will paste whatever is in their address
+ * bar — watch, youtu.be, or shorts links. Normalize them all to the embed form.
+ */
+function toEmbedUrl(url: string): string {
+  const match = url.match(
+    /^https?:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?.*?v=|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/,
+  );
+
+  if (!match) return url;
+
+  const start = url.match(/[?&](?:t|start)=(\d+)/)?.[1];
+  return `https://www.youtube.com/embed/${match[1]}${start ? `?start=${start}` : ''}`;
+}
+
 const { entry, alternates } = Astro.props;
 const lang = entry.data.language;
 const { title, eventDate, location, tags, videoUrl } = entry.data;
@@ -64,7 +80,7 @@ const description = `${title} — ${dateFormatted}, ${location}`;
       videoUrl && (
         <div class="video-wrapper">
           <iframe
-            src={videoUrl}
+            src={toEmbedUrl(videoUrl)}
             title={`${t(lang, 'event.video')}: ${title}`}
             loading="lazy"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
