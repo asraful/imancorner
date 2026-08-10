@@ -9,6 +9,7 @@ backend:
   name: github
   repo: asraful/imancorner
   branch: main
+  base_url: https://sveltia-cms-auth.imancorner.workers.dev
 
 media_folder: public/images/uploads
 public_folder: /images/uploads
