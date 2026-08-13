@@ -6,6 +6,7 @@ import {
   dirFor,
   entryKey,
   entryLanguage,
+  isPublished,
   pagePath,
   t,
   type Language,
@@ -38,7 +39,7 @@ const navPages = (
     (entry) =>
       entryLanguage(entry.id) === lang &&
       entry.data.showInNav &&
-      !entry.data.isDraft,
+      isPublished(entry.data),
   )
 ).sort((a, b) => a.data.navOrder - b.data.navOrder);
 ---

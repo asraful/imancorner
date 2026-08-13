@@ -108,3 +108,17 @@ export function entryLanguage(id: string): Language {
 export function entryKey(id: string): string {
   return id.split('/').slice(1).join('/');
 }
+
+/**
+ * Whether an entry belongs on the site: every route, listing and menu filters
+ * through this.
+ *
+ * Besides drafts, this excludes translations that exist as a file but have not
+ * been written yet — creating an entry in the CMS saves all three languages at
+ * once, so the languages the editor left blank land in the repo as frontmatter
+ * with no title. Those are absent from their language until someone fills them
+ * in; the other languages publish as usual.
+ */
+export function isPublished(data: { title: string; isDraft: boolean }): boolean {
+  return !data.isDraft && data.title.trim() !== '';
+}

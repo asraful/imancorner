@@ -1,7 +1,13 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { entryKey, entryLanguage, pagePath, type Language } from '../../i18n';
+import {
+  entryKey,
+  entryLanguage,
+  isPublished,
+  pagePath,
+  type Language,
+} from '../../i18n';
 
 export async function getStaticPaths() {
   // Slugs already taken by built-in routes; a page with one of these
@@ -10,7 +16,7 @@ export async function getStaticPaths() {
 
   const pages = await getCollection(
     'pages',
-    (entry) => !entry.data.isDraft && !reserved.has(entryKey(entry.id)),
+    (entry) => isPublished(entry.data) && !reserved.has(entryKey(entry.id)),
   );
 
   return pages.map((entry) => {

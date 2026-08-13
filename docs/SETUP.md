@@ -173,6 +173,8 @@ npm run check    # type-check
 | CMS "Login with GitHub" fails | Worker misconfigured or secret missing | `curl "https://sveltia-cms-auth.imancorner.workers.dev/auth?provider=github&site_id=imancorner.org"` should 302 to github.com; note the worker only answers GET — `curl -I` (HEAD) returns 404 by design |
 | Deploy workflow fails on build | Node version | The workflow must pass `node-version: 22` to `withastro/action` |
 | Published event doesn't appear | `isDraft: true`, or deploy still running | Check the Actions tab; flip the Draft toggle |
+| Entry published from the CMS but nothing changes on the site, and the Actions run is red | A build error blocks *every* later publish: the deploy is all-or-nothing, so the site keeps serving the last green build no matter how many times you press Publish | Open the failed run in the Actions tab and read the build step. Fix the cause and push; the next green run publishes the whole backlog at once |
+| Entry appears in English only | The other languages were left blank | Creating an entry saves all three languages at once, so untranslated ones land as files with no title. A language publishes once its title is filled in — until then it is skipped (no empty page, no dead menu link) |
 
 ## Known open items
 

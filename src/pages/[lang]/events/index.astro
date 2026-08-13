@@ -7,6 +7,7 @@ import {
   entryLanguage,
   eventPath,
   formatDate,
+  isPublished,
   languageCodes,
   t,
   type Language,
@@ -26,7 +27,7 @@ const alternates = Object.fromEntries(
 const events = (
   await getCollection(
     'events',
-    (entry) => !entry.data.isDraft && entryLanguage(entry.id) === lang,
+    (entry) => isPublished(entry.data) && entryLanguage(entry.id) === lang,
   )
 ).sort((a, b) => a.data.eventDate.getTime() - b.data.eventDate.getTime());
 
