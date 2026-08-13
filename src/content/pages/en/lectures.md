@@ -1,7 +1,7 @@
 ---
 title: Lectures
 showInNav: true
-navOrder: 0
+navOrder: 1
 isDraft: true
 ---
 Lectures sample
