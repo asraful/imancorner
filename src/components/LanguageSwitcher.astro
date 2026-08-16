@@ -1,34 +1,57 @@
 ---
-import { languageCodes, languages, t, type Language } from '../i18n';
+import {
+  languageCodes,
+  languageShortLabels,
+  languages,
+  t,
+  type Language,
+} from '../i18n';
 
 interface Props {
   lang: Language;
   /** Path of this page in each language it exists in (including the current one). */
   alternates: Partial<Record<Language, string>>;
+  /** Compact shows short codes (header); full shows native names (mobile menu). */
+  variant?: 'compact' | 'full';
 }
 
-const { lang, alternates } = Astro.props;
+const { lang, alternates, variant = 'compact' } = Astro.props;
 
 const links = languageCodes
   .filter((code) => alternates[code])
-  .map((code) => ({ code, label: languages[code], href: alternates[code]! }));
+  .map((code) => ({
+    code,
+    label: variant === 'compact' ? languageShortLabels[code] : languages[code],
+    href: alternates[code]!,
+  }));
 ---
 
-<nav class="lang-switcher" aria-label={t(lang, 'langSwitcher.label')}>
-  <ul>
-    {
-      links.map(({ code, label, href }) => (
-        <li>
-          <a
-            href={href}
-            lang={code}
-            dir={code === 'ar' ? 'rtl' : 'ltr'}
-            aria-current={code === lang ? 'page' : undefined}
-          >
-            {label}
-          </a>
-        </li>
-      ))
-    }
-  </ul>
-</nav>
+{
+  links.length > 1 && (
+    <nav
+      aria-label={t(lang, 'langSwitcher.label')}
+      class:list={[
+        'flex items-center gap-1 rounded-md border border-border bg-card/70 p-1',
+        variant === 'full' && 'w-full justify-between',
+      ]}
+    >
+      {links.map(({ code, label, href }) => (
+        <a
+          href={href}
+          lang={code}
+          dir={code === 'ar' ? 'rtl' : 'ltr'}
+          aria-current={code === lang ? 'page' : undefined}
+          class:list={[
+            'rounded-sm px-2 py-1 text-xs font-medium transition-colors',
+            variant === 'full' && 'flex-1 text-center text-sm',
+            code === lang
+              ? 'bg-emerald-gradient text-primary-foreground'
+              : 'text-muted-foreground hover:text-primary',
+          ]}
+        >
+          {label}
+        </a>
+      ))}
+    </nav>
+  )
+}

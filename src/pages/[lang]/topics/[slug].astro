@@ -1,0 +1,100 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleCard from '../../../components/ArticleCard.astro';
+import Icon from '../../../components/Icon.astro';
+import PageHeader from '../../../components/PageHeader.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import {
+  articlePath,
+  entryKey,
+  entryLanguage,
+  isPublished,
+  t,
+  topicPath,
+  type Language,
+} from '../../../i18n';
+import { getArticles } from '../../../lib/site';
+
+export async function getStaticPaths() {
+  const topics = await getCollection('topics', ({ data }) => isPublished(data));
+
+  return topics.map((entry) => {
+    const key = entryKey(entry.id);
+    const alternates = Object.fromEntries(
+      topics
+        .filter((tp) => entryKey(tp.id) === key)
+        .map((tp) => [entryLanguage(tp.id), topicPath(entryLanguage(tp.id), key)]),
+    ) as Partial<Record<Language, string>>;
+
+    return {
+      params: { lang: entryLanguage(entry.id), slug: key },
+      props: { entry, alternates },
+    };
+  });
+}
+
+const { entry, alternates } = Astro.props;
+const lang = entryLanguage(entry.id);
+const key = entryKey(entry.id);
+const { title, description } = entry.data;
+
+const { Content } = await render(entry);
+
+const articles = (await getArticles(lang)).filter(
+  (article) => article.data.topic === key,
+);
+---
+
+<BaseLayout
+  lang={lang}
+  title={title}
+  description={description || title}
+  alternates={alternates}
+>
+  <PageHeader
+    eyebrow={t(lang, 'topics.heading')}
+    title={title}
+    intro={description}
+  />
+
+  <div class="mx-auto max-w-6xl px-5 py-16">
+    <article class="prose">
+      <Content />
+    </article>
+
+    <section class="mt-14">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <h2 class="text-3xl sm:text-4xl">{t(lang, 'articles.inTopic')}</h2>
+        <div class="h-[2px] w-32 rule-gold" aria-hidden="true"></div>
+      </div>
+
+      {
+        articles.length === 0 ? (
+          <p class="mt-8 text-muted-foreground">{t(lang, 'articles.none')}</p>
+        ) : (
+          <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {articles.map((article) => (
+              <ArticleCard
+                title={article.data.title}
+                url={articlePath(lang, entryKey(article.id))}
+                excerpt={article.data.excerpt}
+                topicLabel={title}
+                minutes={article.data.minutes}
+                minutesLabel={t(lang, 'articles.minutes')}
+                ctaLabel={t(lang, 'articles.read')}
+              />
+            ))}
+          </div>
+        )
+      }
+
+      <a
+        href={`/${lang}/articles/`}
+        class="mt-10 inline-flex items-center gap-2 text-sm font-medium text-primary"
+      >
+        {t(lang, 'articles.viewAll')}
+        <Icon name="arrow-right" class="h-4 w-4 rtl:-scale-x-100" />
+      </a>
+    </section>
+  </div>
+</BaseLayout>

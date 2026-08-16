@@ -1,7 +1,9 @@
 ---
 title: Tampere Quran Competition
 eventDate: 2026-08-15
+time: Saturday, 10:00
 location: Tampere
+category: Competition
 videoUrl: https://www.youtube.com/watch?v=u0BvPU5jN-o
 tags:
   - Quran

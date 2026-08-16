@@ -1,0 +1,54 @@
+---
+import PageHeader from '../../../components/PageHeader.astro';
+import TopicCard from '../../../components/TopicCard.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import {
+  entryKey,
+  languageCodes,
+  t,
+  topicPath,
+  type Language,
+} from '../../../i18n';
+import { getHome, getSettings, getTopics } from '../../../lib/site';
+
+export function getStaticPaths() {
+  return languageCodes.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Language;
+
+const alternates = Object.fromEntries(
+  languageCodes.map((code) => [code, `/${code}/topics/`]),
+);
+
+const { data: settings } = await getSettings(lang);
+const { data: home } = await getHome(lang);
+const topics = await getTopics(lang);
+---
+
+<BaseLayout
+  lang={lang}
+  title={home.topicsSection.heading || t(lang, 'topics.heading')}
+  description={settings.tagline || t(lang, 'site.tagline')}
+  alternates={alternates}
+>
+  <PageHeader
+    eyebrow={home.topicsSection.eyebrow}
+    title={home.topicsSection.heading || t(lang, 'topics.heading')}
+  />
+
+  <div class="mx-auto max-w-6xl px-5 py-16">
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        topics.map((topic) => (
+          <TopicCard
+            title={topic.data.title}
+            url={topicPath(lang, entryKey(topic.id))}
+            description={topic.data.description}
+            icon={topic.data.icon}
+          />
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>

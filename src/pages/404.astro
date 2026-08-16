@@ -1,14 +1,26 @@
 ---
+import Icon from '../components/Icon.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { defaultLanguage } from '../i18n';
+import { defaultLanguage, t } from '../i18n';
+
+const lang = defaultLanguage;
 ---
 
 <BaseLayout
-  lang={defaultLanguage}
-  title="Page not found"
-  description="The page you were looking for does not exist."
+  lang={lang}
+  title={t(lang, 'notFound.title')}
+  description={t(lang, 'notFound.body')}
 >
-  <h1 class="decorated">Page not found</h1>
-  <p>The page you were looking for does not exist or may have moved.</p>
-  <p><a href="/en/">Go to the homepage</a></p>
+  <div class="mx-auto flex max-w-6xl flex-col items-center px-5 py-28 text-center">
+    <p class="font-display text-7xl text-gold-gradient">404</p>
+    <h1 class="mt-4 text-3xl sm:text-4xl">{t(lang, 'notFound.title')}</h1>
+    <p class="mt-3 max-w-md text-muted-foreground">{t(lang, 'notFound.body')}</p>
+    <a
+      href={`/${lang}/`}
+      class="mt-8 inline-flex items-center gap-2 rounded-md bg-emerald-gradient px-5 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5"
+    >
+      {t(lang, 'notFound.home')}
+      <Icon name="arrow-right" class="h-4 w-4 rtl:-scale-x-100" />
+    </a>
+  </div>
 </BaseLayout>

@@ -1,0 +1,90 @@
+---
+import ArticleCard from '../../../components/ArticleCard.astro';
+import PageHeader from '../../../components/PageHeader.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import {
+  articlePath,
+  entryKey,
+  languageCodes,
+  t,
+  topicPath,
+  type Language,
+} from '../../../i18n';
+import { getArticles, getHome, getSettings, getTopics } from '../../../lib/site';
+
+export function getStaticPaths() {
+  return languageCodes.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Language;
+
+const alternates = Object.fromEntries(
+  languageCodes.map((code) => [code, `/${code}/articles/`]),
+);
+
+const { data: settings } = await getSettings(lang);
+const { data: home } = await getHome(lang);
+
+const articles = await getArticles(lang);
+const topics = await getTopics(lang);
+const topicTitles = new Map(
+  topics.map((topic) => [entryKey(topic.id), topic.data.title]),
+);
+---
+
+<BaseLayout
+  lang={lang}
+  title={t(lang, 'articles.heading')}
+  description={settings.tagline || t(lang, 'site.tagline')}
+  alternates={alternates}
+>
+  <PageHeader
+    eyebrow={home.articlesSection.eyebrow}
+    title={t(lang, 'articles.heading')}
+  />
+
+  <div class="mx-auto max-w-6xl px-5 py-16">
+    {
+      topics.length > 0 && (
+        <nav
+          class="flex flex-wrap gap-2"
+          aria-label={t(lang, 'topics.heading')}
+        >
+          {topics.map((topic) => (
+            <a
+              href={topicPath(lang, entryKey(topic.id))}
+              class="rounded-full border border-border bg-card px-3.5 py-1.5 text-sm text-muted-foreground transition-colors hover:border-gold/50 hover:text-primary"
+            >
+              {topic.data.title}
+            </a>
+          ))}
+        </nav>
+      )
+    }
+
+    {
+      articles.length === 0 ? (
+        <p class="mt-10 text-muted-foreground">{t(lang, 'articles.none')}</p>
+      ) : (
+        <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {articles.map((article) => (
+            <ArticleCard
+              title={article.data.title}
+              url={articlePath(lang, entryKey(article.id))}
+              excerpt={article.data.excerpt}
+              topicLabel={topicTitles.get(article.data.topic) ?? ''}
+              topicUrl={
+                topicTitles.has(article.data.topic)
+                  ? topicPath(lang, article.data.topic)
+                  : undefined
+              }
+              minutes={article.data.minutes}
+              minutesLabel={t(lang, 'articles.minutes')}
+              ctaLabel={t(lang, 'articles.read')}
+            />
+          ))}
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>

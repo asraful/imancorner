@@ -22,6 +22,153 @@ i18n:
   default_locale: en
 
 collections:
+  # ---------------------------------------------------------------------
+  # The landing page. Every heading, quote and button on it is edited here;
+  # the cards below each heading come from Events, Articles, Series and
+  # Topics automatically.
+  # ---------------------------------------------------------------------
+  - name: home
+    label: Home page
+    label_singular: home page
+    folder: src/content/home
+    i18n: true
+    create: false
+    delete: false
+    summary: '{{title}}'
+    fields:
+      - { label: Internal name, name: title, widget: string, i18n: true }
+
+      - label: Hero (top banner)
+        name: hero
+        widget: object
+        i18n: true
+        fields:
+          - label: Arabic line above the heading
+            name: bismillah
+            widget: string
+            required: false
+            i18n: duplicate
+          - { label: Heading, name: headingLead, widget: string, i18n: true }
+          - label: Heading — gold second line
+            name: headingHighlight
+            widget: string
+            required: false
+            i18n: true
+          - { label: Intro paragraph, name: intro, widget: text, required: false, i18n: true }
+          - label: Main button
+            name: primaryCta
+            widget: object
+            i18n: true
+            fields:
+              - { label: Label, name: label, widget: string, required: false, i18n: true }
+              - label: Link
+                name: url
+                widget: string
+                required: false
+                i18n: duplicate
+                hint: 'Site link without the language, e.g. /articles/ — or a full https:// address.'
+          - label: Secondary button
+            name: secondaryCta
+            widget: object
+            i18n: true
+            fields:
+              - { label: Label, name: label, widget: string, required: false, i18n: true }
+              - { label: Link, name: url, widget: string, required: false, i18n: duplicate }
+          - label: Background image
+            name: image
+            widget: image
+            required: false
+            i18n: duplicate
+          - label: Image description (for screen readers)
+            name: imageAlt
+            widget: string
+            required: false
+            i18n: true
+
+      - label: Verse of the day (card in the banner)
+        name: verse
+        widget: object
+        i18n: true
+        fields:
+          - { label: Small label, name: label, widget: string, required: false, i18n: true }
+          - { label: Arabic text, name: arabic, widget: text, required: false, i18n: duplicate }
+          - { label: Translation, name: translation, widget: text, required: false, i18n: true }
+          - { label: Reference, name: reference, widget: string, required: false, i18n: true }
+
+      - label: Topics section
+        name: topicsSection
+        widget: object
+        i18n: true
+        fields:
+          - { label: Small label above heading, name: eyebrow, widget: string, required: false, i18n: true }
+          - { label: Heading, name: heading, widget: string, required: false, i18n: true }
+
+      - label: Events section
+        name: eventsSection
+        widget: object
+        i18n: true
+        fields:
+          - { label: Small label above heading, name: eyebrow, widget: string, required: false, i18n: true }
+          - { label: Heading, name: heading, widget: string, required: false, i18n: true }
+          - { label: Link label, name: ctaLabel, widget: string, required: false, i18n: true }
+
+      - label: Articles section
+        name: articlesSection
+        widget: object
+        i18n: true
+        fields:
+          - { label: Small label above heading, name: eyebrow, widget: string, required: false, i18n: true }
+          - { label: Heading, name: heading, widget: string, required: false, i18n: true }
+
+      - label: Hadith of the week
+        name: hadith
+        widget: object
+        i18n: true
+        fields:
+          - { label: Small label, name: eyebrow, widget: string, required: false, i18n: true }
+          - { label: Arabic text, name: arabic, widget: text, required: false, i18n: duplicate }
+          - { label: Translation, name: translation, widget: text, required: false, i18n: true }
+          - { label: Source and grading, name: source, widget: string, required: false, i18n: true }
+
+      - label: Series section
+        name: seriesSection
+        widget: object
+        i18n: true
+        fields:
+          - { label: Heading, name: heading, widget: string, required: false, i18n: true }
+          - { label: Intro, name: intro, widget: text, required: false, i18n: true }
+
+      - label: Newsletter box
+        name: newsletter
+        widget: object
+        i18n: true
+        fields:
+          - { label: Heading, name: heading, widget: string, required: false, i18n: true }
+          - { label: Text, name: text, widget: text, required: false, i18n: true }
+          - { label: Input placeholder, name: placeholder, widget: string, required: false, i18n: true }
+          - { label: Button label, name: buttonLabel, widget: string, required: false, i18n: true }
+          - label: Signup form address
+            name: actionUrl
+            widget: string
+            required: false
+            i18n: duplicate
+            hint: 'Address of your mailing-list provider. Leave empty to show a button linking to the page below instead of a form.'
+          - label: Button link when there is no form
+            name: fallbackUrl
+            widget: string
+            required: false
+            default: /contact/
+            i18n: duplicate
+
+      - label: Draft
+        name: isDraft
+        widget: boolean
+        default: false
+        i18n: duplicate
+
+  # ---------------------------------------------------------------------
+  # Events, published at /<language>/events/<slug>/.
+  # ---------------------------------------------------------------------
   - name: events
     label: Events
     label_singular: event
@@ -38,7 +185,19 @@ collections:
         date_format: 'YYYY-MM-DD'
         time_format: false
         i18n: duplicate
+      - label: Time
+        name: time
+        widget: string
+        required: false
+        i18n: true
+        hint: 'Free text, e.g. "After Maghrib" or "14:00 - 16:00". Optional.'
       - { label: Location, name: location, widget: string, i18n: true }
+      - label: Category
+        name: category
+        widget: string
+        required: false
+        i18n: true
+        hint: 'Shown as a badge on the event card, e.g. Study, Workshop, Social.'
       - label: Video URL
         name: videoUrl
         widget: string
@@ -54,8 +213,146 @@ collections:
         hint: 'Drafts are never published to the website.'
       - { label: Body, name: body, widget: markdown, i18n: true }
 
+  # ---------------------------------------------------------------------
+  # Articles, published at /<language>/articles/<slug>/ and listed on the
+  # home page, the articles page and their topic page.
+  # ---------------------------------------------------------------------
+  - name: articles
+    label: Articles
+    label_singular: article
+    folder: src/content/articles
+    i18n: true
+    create: true
+    summary: '{{title}}'
+    sortable_fields: [publishDate, title]
+    fields:
+      - { label: Title, name: title, widget: string, i18n: true }
+      - label: Excerpt
+        name: excerpt
+        widget: text
+        required: false
+        i18n: true
+        hint: 'One or two sentences shown on the article card.'
+      - label: Topic
+        name: topic
+        widget: select
+        required: false
+        i18n: duplicate
+        options:
+          - { label: Quran, value: quran }
+          - { label: Hadith, value: hadith }
+          - { label: Fiqh, value: fiqh }
+          - { label: Seerah, value: seerah }
+        hint: 'Must match a Topic entry; the article then appears on that topic page.'
+      - label: Reading time (minutes)
+        name: minutes
+        widget: number
+        value_type: int
+        default: 5
+        required: false
+        i18n: duplicate
+      - label: Publish date
+        name: publishDate
+        widget: datetime
+        format: 'YYYY-MM-DD'
+        date_format: 'YYYY-MM-DD'
+        time_format: false
+        required: false
+        i18n: duplicate
+        hint: 'Newest articles are listed first.'
+      - label: Draft
+        name: isDraft
+        widget: boolean
+        default: false
+        i18n: duplicate
+        hint: 'Drafts are never published to the website.'
+      - { label: Body, name: body, widget: markdown, i18n: true }
+
+  # ---------------------------------------------------------------------
+  # Study series, published at /<language>/series/<slug>/.
+  # ---------------------------------------------------------------------
+  - name: series
+    label: Study series
+    label_singular: series
+    folder: src/content/series
+    i18n: true
+    create: true
+    summary: '{{title}}'
+    sortable_fields: [order, title]
+    fields:
+      - { label: Title, name: title, widget: string, i18n: true }
+      - label: Parts label
+        name: partsLabel
+        widget: string
+        required: false
+        i18n: true
+        hint: 'Gold line above the title, e.g. "40 parts".'
+      - { label: Description, name: description, widget: text, required: false, i18n: true }
+      - label: Order
+        name: order
+        widget: number
+        value_type: int
+        default: 1
+        required: false
+        i18n: duplicate
+        hint: 'Lower numbers are listed first.'
+      - label: Draft
+        name: isDraft
+        widget: boolean
+        default: false
+        i18n: duplicate
+      - { label: Body, name: body, widget: markdown, i18n: true }
+
+  # ---------------------------------------------------------------------
+  # Topics: the four cards on the home page. Each one gets its own page at
+  # /<language>/topics/<slug>/ listing the articles assigned to it.
+  # ---------------------------------------------------------------------
+  - name: topics
+    label: Topics
+    label_singular: topic
+    folder: src/content/topics
+    i18n: true
+    create: true
+    summary: '{{title}}'
+    sortable_fields: [order, title]
+    fields:
+      - { label: Title, name: title, widget: string, i18n: true }
+      - { label: Description, name: description, widget: text, required: false, i18n: true }
+      - label: Icon
+        name: icon
+        widget: select
+        default: book-open
+        i18n: duplicate
+        options:
+          - { label: Open book, value: book-open }
+          - { label: Scroll, value: scroll-text }
+          - { label: Compass, value: compass }
+          - { label: Sparkles, value: sparkles }
+          - { label: Crescent moon, value: moon }
+          - { label: Star, value: star }
+          - { label: Heart, value: heart }
+          - { label: People, value: users }
+          - { label: Graduation cap, value: graduation-cap }
+          - { label: Microphone, value: mic }
+          - { label: Calendar, value: calendar }
+      - label: Order
+        name: order
+        widget: number
+        value_type: int
+        default: 1
+        required: false
+        i18n: duplicate
+      - label: Draft
+        name: isDraft
+        widget: boolean
+        default: false
+        i18n: duplicate
+      - { label: Body, name: body, widget: markdown, i18n: true }
+
+  # ---------------------------------------------------------------------
   # Standalone pages (About, Contact, …) published at /<language>/<slug>/.
-  # "Show in menu" adds the page to the header navigation.
+  # Link to them from the navigation in Site settings.
+  # ---------------------------------------------------------------------
   - name: pages
     label: Pages
     label_singular: page
@@ -70,20 +367,19 @@ collections:
         widget: string
         required: false
         i18n: true
-        hint: 'Short summary used by search engines. Optional.'
+        hint: 'Short summary shown under the title and used by search engines.'
       - label: Show in menu
         name: showInNav
         widget: boolean
         default: false
         i18n: duplicate
-        hint: 'Adds this page to the site header navigation.'
+        hint: 'Legacy setting — the header menu is now edited in Site settings.'
       - label: Menu order
         name: navOrder
         widget: number
         value_type: int
         default: 0
         i18n: duplicate
-        hint: 'Lower numbers appear first in the menu.'
       - label: Draft
         name: isDraft
         widget: boolean
@@ -91,3 +387,87 @@ collections:
         i18n: duplicate
         hint: 'Drafts are never published to the website.'
       - { label: Body, name: body, widget: markdown, i18n: true }
+
+  # ---------------------------------------------------------------------
+  # Header menu, header button and footer.
+  # ---------------------------------------------------------------------
+  - name: settings
+    label: Site settings
+    label_singular: site settings
+    folder: src/content/settings
+    i18n: true
+    create: false
+    delete: false
+    summary: '{{title}}'
+    fields:
+      - { label: Internal name, name: title, widget: string, i18n: true }
+      - { label: Site name, name: siteName, widget: string, i18n: true }
+      - label: Small line under the site name
+        name: siteKicker
+        widget: string
+        required: false
+        i18n: true
+      - label: Tagline
+        name: tagline
+        widget: text
+        required: false
+        i18n: true
+        hint: 'Used as the site description for search engines.'
+      - label: Header menu
+        name: nav
+        widget: list
+        i18n: true
+        label_singular: menu link
+        summary: '{{fields.label}} → {{fields.url}}'
+        fields:
+          - { label: Label, name: label, widget: string, i18n: true }
+          - label: Link
+            name: url
+            widget: string
+            i18n: true
+            hint: 'Write the link without the language, e.g. /events/ or /topics/quran/. Full https:// addresses and #anchors also work.'
+      - label: Header button
+        name: headerCta
+        widget: object
+        i18n: true
+        fields:
+          - { label: Label, name: label, widget: string, required: false, i18n: true }
+          - { label: Link, name: url, widget: string, required: false, i18n: true }
+      - label: Footer intro
+        name: footerIntro
+        widget: text
+        required: false
+        i18n: true
+      - label: Footer Arabic line
+        name: footerArabic
+        widget: string
+        required: false
+        i18n: duplicate
+      - label: Footer columns
+        name: footerColumns
+        widget: list
+        required: false
+        i18n: true
+        label_singular: column
+        summary: '{{fields.title}}'
+        fields:
+          - { label: Column title, name: title, widget: string, i18n: true }
+          - label: Links
+            name: links
+            widget: list
+            i18n: true
+            label_singular: link
+            summary: '{{fields.label}} → {{fields.url}}'
+            fields:
+              - { label: Label, name: label, widget: string, i18n: true }
+              - { label: Link, name: url, widget: string, i18n: true }
+      - label: Footer note
+        name: footerNote
+        widget: string
+        required: false
+        i18n: true
+      - label: Name in the copyright line
+        name: copyrightName
+        widget: string
+        required: false
+        i18n: true

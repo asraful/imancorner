@@ -1,0 +1,31 @@
+---
+/** Emerald banner used at the top of every page below the home page. */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  intro?: string;
+}
+
+const { eyebrow = '', title, intro = '' } = Astro.props;
+---
+
+<section class="relative overflow-hidden bg-emerald-gradient text-primary-foreground">
+  <div class="pattern-lattice absolute inset-0 opacity-30" aria-hidden="true"></div>
+  <div class="relative mx-auto max-w-6xl px-5 py-16 md:py-20">
+    {
+      eyebrow && (
+        <p class="text-xs uppercase tracking-[0.24em] text-gold">{eyebrow}</p>
+      )
+    }
+    <h1 class="mt-3 text-4xl leading-[1.15] sm:text-5xl">{title}</h1>
+    {
+      intro && (
+        <p class="mt-5 max-w-2xl text-base text-primary-foreground/80 sm:text-lg">
+          {intro}
+        </p>
+      )
+    }
+    <div class="mt-7 h-[2px] w-24 rule-gold" aria-hidden="true"></div>
+    <slot />
+  </div>
+</section>

@@ -1,0 +1,75 @@
+---
+import { resolveUrl, t, type Language } from '../i18n';
+import { getSettings } from '../lib/site';
+
+interface Props {
+  lang: Language;
+}
+
+const { lang } = Astro.props;
+
+const { data: settings } = await getSettings(lang);
+
+const columns = settings.footerColumns.filter(
+  (column) => column.title.trim() !== '' || column.links.length > 0,
+);
+const year = new Date().getFullYear();
+const name = settings.copyrightName || settings.siteName || t(lang, 'site.name');
+---
+
+<footer class="bg-emerald-gradient text-primary-foreground">
+  <div class="mx-auto max-w-6xl px-5 py-14">
+    <div class="grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)]">
+      <div>
+        <p class="font-display text-2xl">
+          {settings.siteName || t(lang, 'site.name')}
+        </p>
+        {
+          settings.footerIntro && (
+            <p class="mt-3 max-w-xs text-sm text-primary-foreground/75">
+              {settings.footerIntro}
+            </p>
+          )
+        }
+        {
+          settings.footerArabic && (
+            <p class="mt-5 font-arabic text-lg text-gold" dir="rtl" lang="ar">
+              {settings.footerArabic}
+            </p>
+          )
+        }
+      </div>
+
+      {
+        columns.map((column) => (
+          <div>
+            <p class="text-xs uppercase tracking-[0.22em] text-gold">
+              {column.title}
+            </p>
+            <ul class="mt-4 space-y-2 text-sm text-primary-foreground/75">
+              {column.links
+                .filter((item) => item.label.trim() !== '')
+                .map((item) => (
+                  <li>
+                    <a
+                      href={resolveUrl(lang, item.url)}
+                      class="transition-colors hover:text-gold"
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <div
+      class="mt-12 flex flex-col gap-2 border-t border-primary-foreground/15 pt-6 text-xs text-primary-foreground/60 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>© {year} {name}</p>
+      {settings.footerNote && <p>{settings.footerNote}</p>}
+    </div>
+  </div>
+</footer>

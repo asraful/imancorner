@@ -34,13 +34,14 @@ The project spans **two intentionally separate repositories**:
 │   ├── admin/                     # Decap CMS (index.html + config.yml)
 │   └── images/uploads/            # CMS media uploads land here
 └── src/
-    ├── components/                # EventCard, LanguageSwitcher
-    ├── content/events/{en,ar,fi}/ # One markdown file per event per language
-    ├── i18n/                      # UI translations
+    ├── components/                # SiteHeader, SiteFooter, cards, Icon, PageHeader
+    ├── content/<collection>/{en,ar,fi}/  # One markdown file per entry per language
+    ├── i18n/                      # UI translations + URL helpers
     ├── layouts/BaseLayout.astro
-    ├── pages/                     # / (redirect to /en/), /[lang]/, /[lang]/events/[slug]
+    ├── lib/site.ts                # Content getters (settings, home, listings)
+    ├── pages/                     # /, /[lang]/, events, articles, series, topics, [slug]
     ├── scripts/alpine.ts
-    └── styles/global.css
+    └── styles/global.css          # Design tokens + Tailwind v4 theme
 ```
 
 ### Content model
@@ -51,15 +52,34 @@ An entry's **language and URL slug are derived from its file path** —
 another; that's how the language switcher and hreflang links connect them. Neither value is
 frontmatter.
 
-**Events** (`src/content/events/`) frontmatter: `title`, `eventDate`, `location`, `videoUrl`
-(any YouTube link — normalized to the embed form at build time), `tags`, `isDraft` (drafts are
-never published).
+**Events** (`src/content/events/`) frontmatter: `title`, `eventDate`, `time`, `location`,
+`category` (badge on the card), `videoUrl` (any YouTube link — normalized to the embed form at
+build time), `tags`, `isDraft` (drafts are never published).
+
+**Articles** (`src/content/articles/`) → `/<lang>/articles/<slug>/`: `title`, `excerpt`,
+`topic` (the translation key of a Topics entry, e.g. `quran`), `minutes`, `publishDate`
+(newest first), `isDraft`.
+
+**Series** (`src/content/series/`) → `/<lang>/series/<slug>/`: `title`, `partsLabel`
+(e.g. "40 parts"), `description`, `order`, `isDraft`.
+
+**Topics** (`src/content/topics/`) → `/<lang>/topics/<slug>/`: `title`, `description`, `icon`
+(one of the names drawn by `src/components/Icon.astro`), `order`, `isDraft`. Each topic page
+lists the articles whose `topic` matches its filename.
 
 **Pages** (About, Contact, …; `src/content/pages/`) are published at `/<lang>/<slug>/` by
-`src/pages/[lang]/[slug].astro`. Frontmatter: `title`, `description` (SEO, optional),
-`showInNav` (adds the page to the header menu), `navOrder` (menu position, lower first),
-`isDraft`. The slug `events` is reserved. A draft example lives at
-`src/content/pages/en/example-page.md`.
+`src/pages/[lang]/[slug].astro`. Frontmatter: `title`, `description` (shown under the title
+and used for SEO), `isDraft`. The slugs `events`, `articles`, `series` and `topics` are
+reserved. (`showInNav`/`navOrder` remain in the schema but the menu now comes from Site
+settings.)
+
+**Home** (`src/content/home/<lang>/home.md`) holds every string on the landing page — hero,
+verse of the day, section headings, hadith of the week, newsletter box. **Site settings**
+(`src/content/settings/<lang>/settings.md`) holds the site name, header menu, header button
+and footer. Both are one entry per language, edited in the CMS but not creatable/deletable
+there. Links in them are written without the language prefix (`/events/`) and expanded by
+`resolveUrl()` in `src/i18n`; if a translation is left empty the English entry is used, so
+the header and landing page never render blank.
 
 ## Hosting & deployment
 
@@ -148,9 +168,23 @@ three languages edited together.
 ### Creating a standalone page
 
 Same flow via **Pages** in the admin: title, optional description, body in markdown, with
-translations in the same entry via the locale dropdown. Turn on **Show in menu** to add it to
-the header navigation; **Menu order** controls its position. The page is published at
+translations in the same entry via the locale dropdown. The page is published at
 `/<lang>/<slug>/` where the slug comes from the English title.
+
+To put it in the menu, open **Site settings** → **Header menu** and add a link whose URL is
+`/<slug>/` (no language prefix — it is added per language automatically). The same applies to
+the footer columns.
+
+### Editing the landing page
+
+**Home page** in the admin holds every visible string of `/`: the hero heading and buttons,
+the verse of the day, each section heading, the hadith of the week and the newsletter box.
+The cards under those headings are pulled automatically from Events, Articles, Series and
+Topics, so publishing an article is enough to change what the home page shows.
+
+To collect newsletter signups, paste your mailing-list provider's form address into
+**Newsletter box → Signup form address**; while it is empty the box shows a button linking to
+the contact page instead of a form.
 
 Alternative without the CMS: edit the markdown files under `src/content/` directly on
 github.com — same result.

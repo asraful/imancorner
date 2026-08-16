@@ -1,5 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
+import PageHeader from '../../components/PageHeader.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import {
   entryKey,
@@ -8,11 +9,12 @@ import {
   pagePath,
   type Language,
 } from '../../i18n';
+import { getSettings } from '../../lib/site';
 
 export async function getStaticPaths() {
   // Slugs already taken by built-in routes; a page with one of these
   // translation keys would shadow them, so it is skipped.
-  const reserved = new Set(['events']);
+  const reserved = new Set(['events', 'articles', 'series', 'topics']);
 
   const pages = await getCollection(
     'pages',
@@ -38,6 +40,7 @@ const { entry, alternates } = Astro.props;
 const lang = entryLanguage(entry.id);
 const { title, description } = entry.data;
 
+const { data: settings } = await getSettings(lang);
 const { Content } = await render(entry);
 ---
 
@@ -47,11 +50,11 @@ const { Content } = await render(entry);
   description={description ?? title}
   alternates={alternates}
 >
-  <article>
-    <h1 class="decorated">{title}</h1>
+  <PageHeader eyebrow={settings.siteName} title={title} intro={description} />
 
-    <div class="prose">
+  <div class="mx-auto max-w-6xl px-5 py-16">
+    <article class="prose">
       <Content />
-    </div>
-  </article>
+    </article>
+  </div>
 </BaseLayout>

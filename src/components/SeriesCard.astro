@@ -1,0 +1,40 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  title: string;
+  url: string;
+  partsLabel?: string;
+  description?: string;
+  ctaLabel: string;
+}
+
+const {
+  title,
+  url,
+  partsLabel = '',
+  description = '',
+  ctaLabel,
+} = Astro.props;
+---
+
+<article
+  class="flex flex-col rounded-lg border border-border bg-card p-7 shadow-soft transition-colors hover:border-gold/50"
+>
+  {
+    partsLabel && (
+      <p class="text-xs uppercase tracking-[0.2em] text-gold">{partsLabel}</p>
+    )
+  }
+  <h3 class="mt-3 text-2xl leading-snug">
+    <a href={url} class="transition-colors hover:text-primary">{title}</a>
+  </h3>
+  {description && <p class="mt-2 flex-1 text-sm text-muted-foreground">{description}</p>}
+  <a
+    href={url}
+    class="mt-5 inline-flex items-center gap-1 text-sm font-medium text-primary"
+  >
+    {ctaLabel}
+    <Icon name="arrow-right" class="h-4 w-4 rtl:-scale-x-100" />
+  </a>
+</article>

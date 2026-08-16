@@ -5,9 +5,13 @@ export interface EventListItem {
   title: string;
   url: string;
   location: string;
+  category: string;
+  time: string;
   tags: string[];
   dateISO: string;
   dateFormatted: string;
+  /** Date and time joined for display, e.g. "15 August 2026 · After Maghrib". */
+  when: string;
 }
 
 export default (Alpine: Alpine): void => {

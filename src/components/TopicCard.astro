@@ -1,0 +1,31 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  title: string;
+  url: string;
+  description?: string;
+  icon?: string;
+}
+
+const { title, url, description = '', icon = 'book-open' } = Astro.props;
+---
+
+<a
+  href={url}
+  class="group block rounded-lg border border-border bg-card p-6 shadow-soft transition-all hover:-translate-y-1 hover:border-gold/50"
+>
+  <span
+    class="flex h-10 w-10 items-center justify-center rounded-md bg-accent text-primary"
+  >
+    <Icon name={icon} class="h-5 w-5" />
+  </span>
+  <h3 class="mt-5 text-xl transition-colors group-hover:text-primary">{title}</h3>
+  {
+    description && (
+      <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+        {description}
+      </p>
+    )
+  }
+</a>

@@ -1,16 +1,8 @@
 ---
-import { getCollection } from 'astro:content';
-import LanguageSwitcher from '../components/LanguageSwitcher.astro';
-import {
-  defaultLanguage,
-  dirFor,
-  entryKey,
-  entryLanguage,
-  isPublished,
-  pagePath,
-  t,
-  type Language,
-} from '../i18n';
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import { defaultLanguage, dirFor, t, type Language } from '../i18n';
+import { getSettings } from '../lib/site';
 import '../styles/global.css';
 
 interface Props {
@@ -23,7 +15,8 @@ interface Props {
 
 const { lang, title, description, alternates = {} } = Astro.props;
 
-const siteName = t(lang, 'site.name');
+const { data: settings } = await getSettings(lang);
+const siteName = settings.siteName || t(lang, 'site.name');
 const fullTitle = title === siteName ? title : `${title} · ${siteName}`;
 
 const site = Astro.site!;
@@ -31,17 +24,6 @@ const hreflangLinks = (Object.entries(alternates) as [Language, string][]).map(
   ([code, path]) => ({ code, href: new URL(path, site).href }),
 );
 const xDefaultPath = alternates[defaultLanguage];
-const year = new Date().getFullYear();
-
-const navPages = (
-  await getCollection(
-    'pages',
-    (entry) =>
-      entryLanguage(entry.id) === lang &&
-      entry.data.showInNav &&
-      isPublished(entry.data),
-  )
-).sort((a, b) => a.data.navOrder - b.data.navOrder);
 ---
 
 <!doctype html>
@@ -53,6 +35,20 @@ const navPages = (
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={new URL(Astro.url.pathname, site).href} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Manrope:wght@400;500;600;700&display=swap"
+    />
+
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteName} />
+    <meta name="twitter:card" content="summary_large_image" />
+
     {
       hreflangLinks.length > 1 &&
         hreflangLinks.map(({ code, href }) => (
@@ -69,47 +65,12 @@ const navPages = (
       )
     }
   </head>
-  <body>
+  <body class="min-h-screen bg-parchment">
     <a class="skip-link" href="#main">{t(lang, 'skipLink')}</a>
-    <header class="site-header">
-      <div class="wrap">
-        <a class="site-title" href={`/${lang}/`}>{siteName}</a>
-        <nav class="site-nav" aria-label={siteName}>
-          <a
-            href={`/${lang}/events/`}
-            aria-current={
-              Astro.url.pathname.startsWith(`/${lang}/events`)
-                ? 'page'
-                : undefined
-            }
-          >
-            {t(lang, 'nav.events')}
-          </a>
-          {
-            navPages.map((page) => (
-              <a
-                href={pagePath(lang, entryKey(page.id))}
-                aria-current={
-                  Astro.url.pathname === pagePath(lang, entryKey(page.id))
-                    ? 'page'
-                    : undefined
-                }
-              >
-                {page.data.title}
-              </a>
-            ))
-          }
-        </nav>
-        <LanguageSwitcher lang={lang} alternates={alternates} />
-      </div>
-    </header>
-    <main id="main" class="wrap">
+    <SiteHeader lang={lang} alternates={alternates} />
+    <main id="main">
       <slot />
     </main>
-    <footer class="site-footer">
-      <div class="wrap">
-        <p>© {year} {siteName}</p>
-      </div>
-    </footer>
+    <SiteFooter lang={lang} />
   </body>
 </html>

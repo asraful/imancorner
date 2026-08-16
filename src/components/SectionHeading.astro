@@ -1,0 +1,47 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  eyebrow?: string;
+  heading: string;
+  intro?: string;
+  /** Optional "view all" style link shown on the opposite side of the heading. */
+  ctaLabel?: string;
+  ctaUrl?: string;
+}
+
+const {
+  eyebrow = '',
+  heading,
+  intro = '',
+  ctaLabel = '',
+  ctaUrl = '',
+} = Astro.props;
+---
+
+<div class="flex flex-wrap items-end justify-between gap-4">
+  <div class="max-w-2xl">
+    {
+      eyebrow && (
+        <p class="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+          {eyebrow}
+        </p>
+      )
+    }
+    <h2 class="mt-3 text-3xl sm:text-4xl">{heading}</h2>
+    {intro && <p class="mt-3 text-muted-foreground">{intro}</p>}
+  </div>
+  {
+    ctaLabel && ctaUrl ? (
+      <a
+        href={ctaUrl}
+        class="inline-flex items-center gap-1 text-sm font-medium text-primary"
+      >
+        {ctaLabel}
+        <Icon name="arrow-right" class="h-4 w-4 rtl:-scale-x-100" />
+      </a>
+    ) : (
+      <div class="h-[2px] w-32 rule-gold" aria-hidden="true" />
+    )
+  }
+</div>

@@ -1,0 +1,60 @@
+---
+import PageHeader from '../../../components/PageHeader.astro';
+import SeriesCard from '../../../components/SeriesCard.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import {
+  entryKey,
+  languageCodes,
+  seriesPath,
+  t,
+  type Language,
+} from '../../../i18n';
+import { getHome, getSeries, getSettings } from '../../../lib/site';
+
+export function getStaticPaths() {
+  return languageCodes.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Language;
+
+const alternates = Object.fromEntries(
+  languageCodes.map((code) => [code, `/${code}/series/`]),
+);
+
+const { data: settings } = await getSettings(lang);
+const { data: home } = await getHome(lang);
+const series = await getSeries(lang);
+---
+
+<BaseLayout
+  lang={lang}
+  title={home.seriesSection.heading || t(lang, 'series.heading')}
+  description={home.seriesSection.intro || settings.tagline || t(lang, 'site.tagline')}
+  alternates={alternates}
+>
+  <PageHeader
+    eyebrow={settings.siteName}
+    title={home.seriesSection.heading || t(lang, 'series.heading')}
+    intro={home.seriesSection.intro}
+  />
+
+  <div class="mx-auto max-w-6xl px-5 py-16">
+    {
+      series.length === 0 ? (
+        <p class="text-muted-foreground">{t(lang, 'series.none')}</p>
+      ) : (
+        <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {series.map((entry) => (
+            <SeriesCard
+              title={entry.data.title}
+              url={seriesPath(lang, entryKey(entry.id))}
+              partsLabel={entry.data.partsLabel}
+              description={entry.data.description}
+              ctaLabel={t(lang, 'series.open')}
+            />
+          ))}
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>

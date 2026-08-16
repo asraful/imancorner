@@ -1,398 +1,316 @@
-/* ============================================================
-   THEME — edit this block to restyle the entire site.
-   All components reference these semantic variables only.
-   ============================================================ */
+@import 'tailwindcss';
+@source '../../src';
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system: modern Islamic content site.
+ * Deep emerald + antique gold, Amiri display serif, Manrope body.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-deep: var(--primary-deep);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --font-display: 'Amiri', ui-serif, Georgia, serif;
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: 'Amiri', 'Noto Naskh Arabic', serif;
+}
+
 :root {
-  --color-primary: #3f6f4a;
-  --color-primary-dark: #285238;
-  --color-primary-light: #e8f0e8;
+  --radius: 0.5rem;
 
-  --color-accent: #c9a85c;
-  --color-accent-light: #f4ecd8;
+  --background: oklch(0.985 0.011 95);
+  --foreground: oklch(0.235 0.03 155);
 
-  --color-background: #fcfbf7;
-  --color-surface: #ffffff;
+  --card: oklch(1 0.004 95);
+  --card-foreground: oklch(0.235 0.03 155);
+  --popover: oklch(1 0.004 95);
+  --popover-foreground: oklch(0.235 0.03 155);
 
-  --color-text: #26332a;
-  --color-text-muted: #5c675f;
+  --primary: oklch(0.38 0.075 158);
+  --primary-foreground: oklch(0.975 0.015 95);
+  --primary-deep: oklch(0.24 0.055 160);
 
-  --color-border: #dfe4df;
+  --secondary: oklch(0.95 0.019 95);
+  --secondary-foreground: oklch(0.3 0.05 158);
 
-  --font-body:
-    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-    sans-serif;
-  --font-arabic:
-    'Geeza Pro', 'Segoe UI', 'Noto Naskh Arabic', 'Traditional Arabic', Tahoma,
-    system-ui, sans-serif;
+  --muted: oklch(0.955 0.014 95);
+  --muted-foreground: oklch(0.52 0.025 155);
 
-  --radius: 6px;
-  --content-width: 62rem;
-}
+  --accent: oklch(0.93 0.038 92);
+  --accent-foreground: oklch(0.3 0.05 158);
 
-/* ============================================================
-   Base
-   ============================================================ */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+  --gold: oklch(0.735 0.108 82);
+  --gold-foreground: oklch(0.24 0.055 160);
 
-html {
-  color-scheme: light;
-}
+  --destructive: oklch(0.55 0.19 27);
+  --destructive-foreground: oklch(0.985 0.005 95);
 
-body {
-  margin: 0;
-  font-family: var(--font-body);
-  font-size: 1rem;
-  line-height: 1.65;
-  color: var(--color-text);
-  background: var(--color-background);
-  text-align: start;
-}
+  --border: oklch(0.9 0.018 95);
+  --input: oklch(0.9 0.018 95);
+  --ring: oklch(0.735 0.108 82);
 
-/* Arabic: friendlier script stack, slightly larger and looser for readability */
-:lang(ar) {
-  font-family: var(--font-arabic);
-  font-size: 1.0625rem;
-  line-height: 1.85;
-}
-
-h1,
-h2,
-h3 {
-  line-height: 1.25;
-  color: var(--color-primary-dark);
-  margin-block: 0 0.5em;
-}
-
-h1 {
-  font-size: clamp(1.75rem, 4vw, 2.375rem);
-}
-
-h2 {
-  font-size: clamp(1.35rem, 3vw, 1.75rem);
-}
-
-h3 {
-  font-size: 1.15rem;
-}
-
-p {
-  margin-block: 0 1em;
-}
-
-a {
-  color: var(--color-primary);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.15em;
-}
-
-a:hover {
-  color: var(--color-primary-dark);
-}
-
-:focus-visible {
-  outline: 2px solid var(--color-primary-dark);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-
-img,
-iframe {
-  max-width: 100%;
-}
-
-[x-cloak] {
-  display: none !important;
-}
-
-.skip-link {
-  position: absolute;
-  inset-inline-start: 0.5rem;
-  inset-block-start: -3rem;
-  padding: 0.5rem 1rem;
-  background: var(--color-primary-dark);
-  color: #fff;
-  border-radius: var(--radius);
-  z-index: 10;
-}
-
-.skip-link:focus {
-  inset-block-start: 0.5rem;
-}
-
-/* ============================================================
-   Layout chrome
-   ============================================================ */
-.wrap {
-  max-width: var(--content-width);
-  margin-inline: auto;
-  padding-inline: 1.25rem;
-}
-
-.site-header {
-  background: var(--color-surface);
-  /* thin gold line — subtle Islamic-inspired accent */
-  border-block-end: 2px solid var(--color-accent);
-}
-
-.site-header .wrap {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem 1.5rem;
-  padding-block: 0.9rem;
-}
-
-.site-title {
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: var(--color-primary-dark);
-  text-decoration: none;
-}
-
-.site-nav {
-  display: flex;
-  gap: 1.25rem;
-  margin-inline-end: auto;
-}
-
-.site-nav a {
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.site-nav a[aria-current='page'] {
-  color: var(--color-primary-dark);
-  border-block-end: 2px solid var(--color-accent);
-}
-
-.lang-switcher ul {
-  display: flex;
-  gap: 0.25rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.lang-switcher a {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--radius);
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-.lang-switcher a[aria-current='page'] {
-  background: var(--color-primary-light);
-  color: var(--color-primary-dark);
-  font-weight: 600;
-}
-
-main {
-  padding-block: 2.5rem 3.5rem;
-}
-
-.site-footer {
-  background: var(--color-primary-dark);
-  color: var(--color-primary-light);
-  padding-block: 1.5rem;
-  font-size: 0.9rem;
-}
-
-.site-footer a {
-  color: inherit;
-}
-
-/* ============================================================
-   Hero / section headings
-   ============================================================ */
-.hero {
-  padding-block-end: 2rem;
-  margin-block-end: 2.5rem;
-  border-block-end: 1px solid var(--color-border);
-}
-
-.hero p {
-  font-size: 1.15rem;
-  color: var(--color-text-muted);
-  max-width: 40rem;
-}
-
-/* short decorative rule under main headings */
-.decorated::after {
-  content: '';
-  display: block;
-  inline-size: 3.5rem;
-  block-size: 3px;
-  margin-block-start: 0.6rem;
-  background: linear-gradient(
-    to right,
-    var(--color-accent),
-    var(--color-accent-light)
+  /* Gradients & shadows */
+  --gradient-emerald: linear-gradient(
+    160deg,
+    var(--primary-deep) 0%,
+    var(--primary) 55%,
+    oklch(0.32 0.06 165) 100%
   );
-  border-radius: 2px;
-}
-
-[dir='rtl'] .decorated::after {
-  background: linear-gradient(
-    to left,
-    var(--color-accent),
-    var(--color-accent-light)
+  --gradient-gold: linear-gradient(100deg, var(--gold), oklch(0.86 0.09 92));
+  --gradient-parchment: linear-gradient(
+    180deg,
+    var(--background),
+    oklch(0.965 0.02 92)
   );
+  --shadow-soft:
+    0 1px 2px oklch(0.24 0.055 160 / 0.06),
+    0 12px 30px -18px oklch(0.24 0.055 160 / 0.28);
+  --shadow-lift: 0 24px 60px -28px oklch(0.24 0.055 160 / 0.4);
+  --shadow-gold: 0 18px 45px -22px oklch(0.735 0.108 82 / 0.55);
 }
 
-/* ============================================================
-   Event cards
-   ============================================================ */
-.event-grid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 1.25rem;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+.dark {
+  --background: oklch(0.19 0.035 160);
+  --foreground: oklch(0.96 0.012 95);
+  --card: oklch(0.235 0.042 160);
+  --card-foreground: oklch(0.96 0.012 95);
+  --popover: oklch(0.235 0.042 160);
+  --popover-foreground: oklch(0.96 0.012 95);
+  --primary: oklch(0.72 0.09 158);
+  --primary-foreground: oklch(0.19 0.035 160);
+  --primary-deep: oklch(0.16 0.03 160);
+  --secondary: oklch(0.28 0.045 160);
+  --secondary-foreground: oklch(0.96 0.012 95);
+  --muted: oklch(0.28 0.045 160);
+  --muted-foreground: oklch(0.75 0.025 120);
+  --accent: oklch(0.3 0.05 160);
+  --accent-foreground: oklch(0.96 0.012 95);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
 }
 
-.event-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-block-start: 3px solid var(--color-primary);
-  border-radius: var(--radius);
-  padding: 1.1rem 1.25rem;
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  blockquote {
+    font-family: var(--font-display);
+  }
+
+  /* Arabic pages: the display serif carries the whole page, slightly looser. */
+  [dir='rtl'] body {
+    font-family: var(--font-arabic);
+    line-height: 1.85;
+  }
+
+  [x-cloak] {
+    display: none !important;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 }
 
-.event-card h3 {
-  margin-block-end: 0.35rem;
+@utility bg-emerald-gradient {
+  background-image: var(--gradient-emerald);
 }
 
-.event-card h3 a {
-  text-decoration: none;
-  color: var(--color-primary-dark);
+@utility bg-parchment {
+  background-image: var(--gradient-parchment);
 }
 
-.event-card h3 a:hover {
-  text-decoration: underline;
+@utility text-gold-gradient {
+  background-image: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.event-meta {
-  color: var(--color-text-muted);
-  font-size: 0.92rem;
-  margin-block-end: 0.6rem;
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
 }
 
-.tag-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+@utility shadow-lift {
+  box-shadow: var(--shadow-lift);
 }
 
-.tag {
-  display: inline-block;
-  padding: 0.1rem 0.6rem;
-  font-size: 0.8rem;
+@utility shadow-gold {
+  box-shadow: var(--shadow-gold);
+}
+
+/* Subtle geometric star lattice used behind sections */
+@utility pattern-lattice {
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      oklch(0.735 0.108 82 / 0.14) 0 1px,
+      transparent 1px 22px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      oklch(0.735 0.108 82 / 0.14) 0 1px,
+      transparent 1px 22px
+    );
+}
+
+@utility rule-gold {
+  background-image: var(--gradient-gold);
+  height: 2px;
   border-radius: 999px;
-  background: var(--color-primary-light);
-  color: var(--color-primary-dark);
 }
 
 /* ============================================================
-   Listing filters
+   Markdown bodies written in the CMS
    ============================================================ */
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-  margin-block-end: 1.75rem;
-}
+@layer components {
+  .prose {
+    max-width: 44rem;
+    line-height: 1.75;
+    color: var(--color-foreground);
+  }
 
-.filters label {
-  font-weight: 600;
-}
+  .prose > * + * {
+    margin-block-start: 1.15em;
+  }
 
-.filters input[type='search'] {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
-  font: inherit;
-  min-inline-size: 16rem;
-}
+  .prose h2 {
+    font-size: 1.75rem;
+    line-height: 1.25;
+    margin-block-start: 2rem;
+  }
 
-.tag-filter,
-.reset-button {
-  font: inherit;
-  font-size: 0.9rem;
-  padding: 0.3rem 0.8rem;
-  border-radius: 999px;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text);
-  cursor: pointer;
-}
+  .prose h3 {
+    font-size: 1.35rem;
+    line-height: 1.3;
+    margin-block-start: 1.75rem;
+  }
 
-.tag-filter[aria-pressed='true'] {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: #fff;
-}
+  .prose a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-color: var(--color-gold);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
 
-.tag-filter:hover,
-.reset-button:hover {
-  border-color: var(--color-primary);
-}
+  .prose ul,
+  .prose ol {
+    padding-inline-start: 1.4rem;
+    list-style: revert;
+  }
 
-.no-results {
-  color: var(--color-text-muted);
-  padding-block: 1rem;
-}
+  .prose li + li {
+    margin-block-start: 0.4em;
+  }
 
-/* ============================================================
-   Event detail
-   ============================================================ */
-.event-detail-meta {
-  display: grid;
-  gap: 0.35rem;
-  margin-block: 1rem 1.5rem;
-  padding: 1rem 1.25rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-inline-start: 3px solid var(--color-accent);
-  border-radius: var(--radius);
-}
+  .prose blockquote {
+    border-inline-start: 3px solid var(--color-gold);
+    padding-inline-start: 1.1rem;
+    font-size: 1.15rem;
+    color: var(--color-muted-foreground);
+  }
 
-.event-detail-meta dt {
-  font-weight: 600;
-  color: var(--color-primary-dark);
-}
+  .prose code {
+    background: var(--color-secondary);
+    border-radius: var(--radius-sm);
+    padding: 0.1em 0.35em;
+    font-size: 0.9em;
+  }
 
-.event-detail-meta dd {
-  margin: 0 0 0.5rem;
-}
+  .prose pre {
+    background: var(--color-primary-deep);
+    color: var(--color-primary-foreground);
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+  }
 
-.video-wrapper {
-  aspect-ratio: 16 / 9;
-  margin-block: 1.5rem;
-}
+  .prose pre code {
+    background: transparent;
+    padding: 0;
+  }
 
-.video-wrapper iframe {
-  inline-size: 100%;
-  block-size: 100%;
-  border: 0;
-  border-radius: var(--radius);
-}
+  .prose img {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+  }
 
-.back-link {
-  display: inline-block;
-  margin-block-start: 2rem;
-}
+  .prose hr {
+    border: 0;
+    height: 2px;
+    background-image: var(--gradient-gold);
+    border-radius: 999px;
+  }
 
-.prose {
-  max-width: 44rem;
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .prose th,
+  .prose td {
+    border: 1px solid var(--color-border);
+    padding: 0.5rem 0.75rem;
+    text-align: start;
+  }
+
+  /* Skip link — visible only when focused by keyboard */
+  .skip-link {
+    position: absolute;
+    inset-inline-start: 0.75rem;
+    inset-block-start: -4rem;
+    z-index: 60;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-deep);
+    color: var(--color-primary-foreground);
+    padding: 0.6rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .skip-link:focus {
+    inset-block-start: 0.75rem;
+  }
 }

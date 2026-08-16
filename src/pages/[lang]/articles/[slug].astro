@@ -1,0 +1,110 @@
+---
+import { getCollection, render } from 'astro:content';
+import Icon from '../../../components/Icon.astro';
+import PageHeader from '../../../components/PageHeader.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import {
+  articlePath,
+  entryKey,
+  entryLanguage,
+  formatDate,
+  isPublished,
+  t,
+  topicPath,
+  type Language,
+} from '../../../i18n';
+import { getTopics } from '../../../lib/site';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles', ({ data }) =>
+    isPublished(data),
+  );
+
+  return articles.map((entry) => {
+    const key = entryKey(entry.id);
+    const alternates = Object.fromEntries(
+      articles
+        .filter((a) => entryKey(a.id) === key)
+        .map((a) => [
+          entryLanguage(a.id),
+          articlePath(entryLanguage(a.id), key),
+        ]),
+    ) as Partial<Record<Language, string>>;
+
+    return {
+      params: { lang: entryLanguage(entry.id), slug: key },
+      props: { entry, alternates },
+    };
+  });
+}
+
+const { entry, alternates } = Astro.props;
+const lang = entryLanguage(entry.id);
+const { title, excerpt, topic, minutes, publishDate } = entry.data;
+
+const { Content } = await render(entry);
+
+const topics = await getTopics(lang);
+const topicEntry = topics.find((item) => entryKey(item.id) === topic);
+---
+
+<BaseLayout
+  lang={lang}
+  title={title}
+  description={excerpt || title}
+  alternates={alternates}
+>
+  <PageHeader
+    eyebrow={topicEntry?.data.title ?? t(lang, 'articles.heading')}
+    title={title}
+    intro={excerpt}
+  >
+    <div
+      class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-primary-foreground/75"
+    >
+      {
+        publishDate && (
+          <span class="inline-flex items-center gap-2">
+            <Icon name="calendar" class="h-4 w-4 text-gold" />
+            <time datetime={publishDate.toISOString().slice(0, 10)}>
+              {formatDate(publishDate, lang)}
+            </time>
+          </span>
+        )
+      }
+      {
+        minutes > 0 && (
+          <span class="inline-flex items-center gap-2">
+            <Icon name="clock" class="h-4 w-4 text-gold" />
+            {minutes} {t(lang, 'articles.minutes')}
+          </span>
+        )
+      }
+      {
+        topicEntry && (
+          <a
+            href={topicPath(lang, topic)}
+            class="inline-flex items-center gap-2 text-gold transition-opacity hover:opacity-80"
+          >
+            <Icon name={topicEntry.data.icon} class="h-4 w-4" />
+            {topicEntry.data.title}
+          </a>
+        )
+      }
+    </div>
+  </PageHeader>
+
+  <div class="mx-auto max-w-6xl px-5 py-16">
+    <article class="prose">
+      <Content />
+    </article>
+
+    <a
+      href={`/${lang}/articles/`}
+      class="mt-10 inline-flex items-center gap-2 text-sm font-medium text-primary"
+    >
+      <Icon name="arrow-right" class="h-4 w-4 -scale-x-100 rtl:scale-x-100" />
+      {t(lang, 'articles.backToArticles')}
+    </a>
+  </div>
+</BaseLayout>

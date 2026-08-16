@@ -61,9 +61,32 @@ src/content/events/ar/eid-gathering-2026.md   →  /ar/events/eid-gathering-2026
 src/content/events/fi/eid-gathering-2026.md   →  /fi/events/eid-gathering-2026/
 ```
 
-Language and slug are derived from the path — not frontmatter. Standalone **Pages**
-(About, Contact, …) work the same way at `/<lang>/<slug>/`, with optional
-`showInNav`/`navOrder` to appear in the header menu. Drafts (`isDraft`) never publish.
+Language and slug are derived from the path — not frontmatter. Drafts (`isDraft`) never
+publish, and a translation left blank in the CMS is skipped instead of failing the build.
+
+Seven collections cover the whole site, and **every page is editable from `/admin`**:
+
+| Collection | Edits | URL |
+|---|---|---|
+| `home` | Every heading, quote and button on the landing page | `/<lang>/` |
+| `settings` | Header menu, header button, footer columns and notes | site-wide chrome |
+| `events` | Events (date, time, location, category, video, tags) | `/<lang>/events/<slug>/` |
+| `articles` | Articles, each assigned to a topic | `/<lang>/articles/<slug>/` |
+| `series` | Multi-part study series | `/<lang>/series/<slug>/` |
+| `topics` | The four pillar cards; each is a hub of its articles | `/<lang>/topics/<slug>/` |
+| `pages` | Standalone pages (About, Contact, …) | `/<lang>/<slug>/` |
+
+Menu and footer links are written without the language prefix (`/events/`,
+`/topics/quran/`); `resolveUrl()` in `src/i18n` expands them per language, so one entry
+serves all three. Full `https://` links and `#anchors` are left alone.
+
+## Design system
+
+Deep emerald + antique gold, Amiri display serif over Manrope body text, ported from the
+`nur-al-ilm` design. Tokens (colours, gradients, shadows, the star-lattice pattern) live at
+the top of `src/styles/global.css` as CSS variables and Tailwind v4 `@theme`/`@utility`
+declarations — restyling the site means editing that one block. Arabic pages render RTL
+with the Amiri/Naskh stack and mirrored gradients and arrows.
 
 ## Ops — how a change goes live
 
@@ -98,7 +121,7 @@ github.com) and the site redeploys automatically.
 | Hosting | GitHub Pages (workflow deploys) | Custom domain `imancorner.org`, Enforce HTTPS on |
 | Build | `.github/workflows/deploy.yml` | Astro 7 needs `node-version: 22` |
 | DNS | Namecheap (BasicDNS) | Apex A records + `www` CNAME, see diagram |
-| CMS | Decap CMS 3 (`public/admin/`) | Single trilingual Events + Pages collections |
+| CMS | Decap CMS 3 (`public/admin/`) | Trilingual Home, Settings, Events, Articles, Series, Topics, Pages |
 | CMS auth | `sveltia-cms-auth.imancorner.workers.dev` | Cloudflare Worker, account `imancorner.org@gmail.com` |
 | OAuth app | "Iman Corner CMS" (GitHub) | Callback → worker `/callback` |
 | Sister site | [tamperequrancompetition.imancorner.org](https://tamperequrancompetition.imancorner.org) | Separate repo [asraful/tamperequrancompetition](https://github.com/asraful/tamperequrancompetition) |

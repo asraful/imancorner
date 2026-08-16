@@ -1,17 +1,17 @@
 ---
-import { getCollection } from 'astro:content';
 import EventCard from '../../../components/EventCard.astro';
+import Icon from '../../../components/Icon.astro';
+import PageHeader from '../../../components/PageHeader.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import {
   entryKey,
-  entryLanguage,
   eventPath,
   formatDate,
-  isPublished,
   languageCodes,
   t,
   type Language,
 } from '../../../i18n';
+import { getEvents, getSettings } from '../../../lib/site';
 import type { EventListItem } from '../../../scripts/alpine';
 
 export function getStaticPaths() {
@@ -24,21 +24,24 @@ const alternates = Object.fromEntries(
   languageCodes.map((code) => [code, `/${code}/events/`]),
 );
 
-const events = (
-  await getCollection(
-    'events',
-    (entry) => isPublished(entry.data) && entryLanguage(entry.id) === lang,
-  )
-).sort((a, b) => a.data.eventDate.getTime() - b.data.eventDate.getTime());
+const { data: settings } = await getSettings(lang);
+const events = await getEvents(lang);
 
-const items: EventListItem[] = events.map((event) => ({
-  title: event.data.title,
-  url: eventPath(lang, entryKey(event.id)),
-  location: event.data.location,
-  tags: event.data.tags,
-  dateISO: event.data.eventDate.toISOString().slice(0, 10),
-  dateFormatted: formatDate(event.data.eventDate, lang),
-}));
+const items: EventListItem[] = events.map((event) => {
+  const dateFormatted = formatDate(event.data.eventDate, lang);
+
+  return {
+    title: event.data.title,
+    url: eventPath(lang, entryKey(event.id)),
+    location: event.data.location,
+    category: event.data.category,
+    time: event.data.time,
+    tags: event.data.tags,
+    dateISO: event.data.eventDate.toISOString().slice(0, 10),
+    dateFormatted,
+    when: event.data.time ? `${dateFormatted} · ${event.data.time}` : dateFormatted,
+  };
+});
 
 const allTags = [...new Set(events.flatMap((event) => event.data.tags))].sort();
 
@@ -49,104 +52,146 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
 <BaseLayout
   lang={lang}
   title={t(lang, 'events.heading')}
-  description={t(lang, 'site.tagline')}
+  description={settings.tagline || t(lang, 'site.tagline')}
   alternates={alternates}
 >
-  <h1 class="decorated">{t(lang, 'events.heading')}</h1>
+  <PageHeader eyebrow={settings.siteName} title={t(lang, 'events.heading')} />
 
-  {
-    items.length === 0 ? (
-      <p>{t(lang, 'events.none')}</p>
-    ) : (
-      <section x-data="eventList">
-        <form class="filters" role="search" @submit.prevent="">
-          <label for="event-search">{t(lang, 'events.searchLabel')}</label>
-          <input
-            type="search"
-            id="event-search"
-            x-model="search"
-            placeholder={t(lang, 'events.searchPlaceholder')}
-          />
-          <button
-            type="button"
-            class="reset-button"
-            x-show="hasFilters"
-            x-cloak
-            @click="reset()"
+  <div class="mx-auto max-w-6xl px-5 py-16">
+    {
+      items.length === 0 ? (
+        <p class="text-muted-foreground">{t(lang, 'events.none')}</p>
+      ) : (
+        <section x-data="eventList">
+          <form
+            class="flex flex-wrap items-center gap-3"
+            role="search"
+            x-on:submit.prevent=""
           >
-            {t(lang, 'events.reset')}
-          </button>
-        </form>
+            <label class="sr-only" for="event-search">
+              {t(lang, 'events.searchLabel')}
+            </label>
+            <div class="relative flex-1 sm:max-w-sm">
+              <span class="pointer-events-none absolute inset-y-0 start-3 flex items-center text-muted-foreground">
+                <Icon name="search" class="h-4 w-4" />
+              </span>
+              <input
+                type="search"
+                id="event-search"
+                x-model="search"
+                placeholder={t(lang, 'events.searchPlaceholder')}
+                class="w-full rounded-md border border-border bg-card py-2.5 ps-10 pe-3 text-sm shadow-soft focus:outline-none focus:ring-2 focus:ring-gold"
+              />
+            </div>
+            <button
+              type="button"
+              class="rounded-md border border-border bg-card px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-gold/50 hover:text-primary"
+              x-show="hasFilters"
+              x-cloak
+              x-on:click="reset()"
+            >
+              {t(lang, 'events.reset')}
+            </button>
+          </form>
 
-        {allTags.length > 0 && (
-          <div
-            class="filters"
-            role="group"
-            aria-label={t(lang, 'events.filterByTag')}
-          >
-            {allTags.map((tag) => (
-              <button
-                type="button"
-                class="tag-filter"
-                aria-pressed="false"
-                @click={`toggleTag(${JSON.stringify(tag)})`}
-                :aria-pressed={`(activeTag === ${JSON.stringify(tag)}).toString()`}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-        )}
+          {allTags.length > 0 && (
+            <div
+              class="mt-4 flex flex-wrap gap-2"
+              role="group"
+              aria-label={t(lang, 'events.filterByTag')}
+            >
+              {allTags.map((tag) => (
+                <button
+                  type="button"
+                  aria-pressed="false"
+                  x-on:click={`toggleTag(${JSON.stringify(tag)})`}
+                  x-bind:aria-pressed={`(activeTag === ${JSON.stringify(tag)}).toString()`}
+                  x-bind:class={`activeTag === ${JSON.stringify(tag)} ? 'bg-emerald-gradient text-primary-foreground border-transparent' : 'bg-card text-muted-foreground border-border hover:border-gold/50'`}
+                  class="rounded-full border px-3 py-1 text-xs font-medium transition-colors"
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          )}
 
-        <ul class="event-grid">
-          <template x-for="event in filteredEvents" x-bind:key="event.url">
-            <li>
-              <article class="event-card">
-                <h3>
-                  <a x-bind:href="event.url" x-text="event.title" />
-                </h3>
-                <p class="event-meta">
-                  <time
-                    x-bind:datetime="event.dateISO"
-                    x-text="event.dateFormatted"
+          <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <template x-for="event in filteredEvents" x-bind:key="event.url">
+              <article class="flex flex-col rounded-lg border border-border bg-card p-6 shadow-soft transition-all hover:-translate-y-1 hover:border-gold/50 hover:shadow-lift">
+                <div class="flex items-center justify-between gap-3">
+                  <span
+                    class="rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground"
+                    x-show="event.category"
+                    x-text="event.category"
                   />
-                  <span aria-hidden="true">·</span>
-                  <span x-text="event.location" />
-                </p>
-                <ul class="tag-list">
+                  <span class="ms-auto flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <Icon name="calendar" class="h-4 w-4" />
+                  </span>
+                </div>
+
+                <h3 class="mt-5 text-xl leading-snug">
+                  <a
+                    class="transition-colors hover:text-primary"
+                    x-bind:href="event.url"
+                    x-text="event.title"
+                  />
+                </h3>
+
+                <div class="mt-4 space-y-2 text-sm text-muted-foreground">
+                  <p class="flex items-center gap-2">
+                    <Icon name="clock" class="h-4 w-4 shrink-0 text-gold" />
+                    <time x-bind:datetime="event.dateISO" x-text="event.when" />
+                  </p>
+                  <p class="flex items-center gap-2" x-show="event.location">
+                    <Icon name="map-pin" class="h-4 w-4 shrink-0 text-gold" />
+                    <span x-text="event.location" />
+                  </p>
+                </div>
+
+                <ul class="mt-4 flex flex-wrap gap-2">
                   <template x-for="tag in event.tags" x-bind:key="tag">
-                    <li class="tag" x-text="tag" />
+                    <li
+                      class="rounded-full bg-secondary px-2.5 py-0.5 text-xs text-secondary-foreground"
+                      x-text="tag"
+                    />
                   </template>
                 </ul>
+
+                <a
+                  class="mt-6 inline-flex w-full items-center justify-center rounded-md border border-border bg-secondary py-2.5 text-sm font-medium text-secondary-foreground transition-colors hover:border-gold/50 hover:bg-accent"
+                  x-bind:href="event.url"
+                >
+                  {t(lang, 'event.details')}
+                </a>
               </article>
-            </li>
-          </template>
-        </ul>
+            </template>
+          </div>
 
-        <p
-          class="no-results"
-          x-show="filteredEvents.length === 0"
-          x-cloak
-          aria-live="polite"
-        >
-          {t(lang, 'events.noResults')}
-        </p>
+          <p
+            class="py-8 text-muted-foreground"
+            x-show="filteredEvents.length === 0"
+            x-cloak
+            aria-live="polite"
+          >
+            {t(lang, 'events.noResults')}
+          </p>
 
-        <noscript>
-          <ul class="event-grid">
-            {items.map((item) => (
-              <EventCard {...item} />
-            ))}
-          </ul>
-        </noscript>
+          <noscript>
+            <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {items.map((item) => (
+                <EventCard {...item} ctaLabel={t(lang, 'event.details')} />
+              ))}
+            </div>
+          </noscript>
 
-        <script
-          type="application/json"
-          id="event-data"
-          set:html={itemsJson}
-          is:inline
-        ></script>
-      </section>
-    )
-  }
+          <script
+            type="application/json"
+            id="event-data"
+            set:html={itemsJson}
+            is:inline
+          />
+        </section>
+      )
+    }
+  </div>
 </BaseLayout>

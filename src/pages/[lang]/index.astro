@@ -1,17 +1,31 @@
 ---
-import { getCollection } from 'astro:content';
+import ArticleCard from '../../components/ArticleCard.astro';
 import EventCard from '../../components/EventCard.astro';
+import Icon from '../../components/Icon.astro';
+import SectionHeading from '../../components/SectionHeading.astro';
+import SeriesCard from '../../components/SeriesCard.astro';
+import TopicCard from '../../components/TopicCard.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import {
+  articlePath,
   entryKey,
-  entryLanguage,
   eventPath,
   formatDate,
-  isPublished,
   languageCodes,
+  resolveUrl,
+  seriesPath,
   t,
+  topicPath,
   type Language,
 } from '../../i18n';
+import {
+  getArticles,
+  getEvents,
+  getHome,
+  getSeries,
+  getSettings,
+  getTopics,
+} from '../../lib/site';
 
 export function getStaticPaths() {
   return languageCodes.map((lang) => ({ params: { lang } }));
@@ -23,47 +37,324 @@ const alternates = Object.fromEntries(
   languageCodes.map((code) => [code, `/${code}/`]),
 );
 
-const events = (
-  await getCollection(
-    'events',
-    (entry) => isPublished(entry.data) && entryLanguage(entry.id) === lang,
-  )
-)
-  .sort((a, b) => a.data.eventDate.getTime() - b.data.eventDate.getTime())
-  .slice(0, 3);
+const { data: home } = await getHome(lang);
+const { data: settings } = await getSettings(lang);
+
+const topics = await getTopics(lang);
+const topicTitles = new Map(
+  topics.map((topic) => [entryKey(topic.id), topic.data.title]),
+);
+
+const events = (await getEvents(lang)).slice(0, 3);
+const articles = (await getArticles(lang)).slice(0, 6);
+const series = (await getSeries(lang)).slice(0, 3);
+
+const { hero, verse, hadith, newsletter } = home;
 ---
 
 <BaseLayout
   lang={lang}
-  title={t(lang, 'site.name')}
-  description={t(lang, 'site.tagline')}
+  title={settings.siteName || t(lang, 'site.name')}
+  description={settings.tagline || t(lang, 'site.tagline')}
   alternates={alternates}
 >
-  <section class="hero">
-    <h1 class="decorated">{t(lang, 'site.name')}</h1>
-    <p>{t(lang, 'site.tagline')}</p>
+  {/* Hero */}
+  <section class="relative overflow-hidden bg-emerald-gradient text-primary-foreground">
+    {
+      hero.image && (
+        <img
+          src={hero.image}
+          alt={hero.imageAlt}
+          width="1600"
+          height="900"
+          class="absolute inset-0 h-full w-full object-cover"
+          fetchpriority="high"
+        />
+      )
+    }
+    {/* The dark end of the wash sits under the text, so it flips for Arabic. */}
+    <div
+      class="absolute inset-0 bg-gradient-to-r from-primary-deep/95 via-primary/85 to-primary-deep/70 rtl:bg-gradient-to-l"
+      aria-hidden="true"
+    >
+    </div>
+    <div
+      class="relative mx-auto grid max-w-6xl gap-12 px-5 py-24 md:grid-cols-[1.15fr_0.85fr] md:py-32"
+    >
+      <div>
+        {
+          hero.bismillah && (
+            <p class="font-arabic text-2xl text-gold" dir="rtl" lang="ar">
+              {hero.bismillah}
+            </p>
+          )
+        }
+        <h1 class="mt-6 text-4xl leading-[1.1] sm:text-5xl md:text-6xl">
+          {hero.headingLead}
+          {
+            hero.headingHighlight && (
+              <span class="block text-gold-gradient">{hero.headingHighlight}</span>
+            )
+          }
+        </h1>
+        {
+          hero.intro && (
+            <p class="mt-6 max-w-xl text-base text-primary-foreground/80 sm:text-lg">
+              {hero.intro}
+            </p>
+          )
+        }
+        <div class="mt-9 flex flex-wrap gap-3">
+          {
+            hero.primaryCta.label && (
+              <a
+                href={resolveUrl(lang, hero.primaryCta.url)}
+                class="inline-flex items-center gap-2 rounded-md bg-gold px-5 py-3 text-sm font-semibold text-gold-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+              >
+                {hero.primaryCta.label}
+                <Icon name="arrow-right" class="h-4 w-4 rtl:-scale-x-100" />
+              </a>
+            )
+          }
+          {
+            hero.secondaryCta.label && (
+              <a
+                href={resolveUrl(lang, hero.secondaryCta.url)}
+                class="inline-flex items-center gap-2 rounded-md border border-primary-foreground/30 px-5 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-foreground/10"
+              >
+                {hero.secondaryCta.label}
+              </a>
+            )
+          }
+        </div>
+      </div>
+
+      {
+        (verse.arabic || verse.translation) && (
+          <div class="self-center rounded-lg border border-gold/30 bg-primary-deep/60 p-7 shadow-lift backdrop-blur-sm">
+            {verse.label && (
+              <p class="text-xs uppercase tracking-[0.24em] text-gold">
+                {verse.label}
+              </p>
+            )}
+            {verse.arabic && (
+              <p class="mt-5 font-arabic text-2xl leading-loose" dir="rtl" lang="ar">
+                {verse.arabic}
+              </p>
+            )}
+            {verse.translation && (
+              <blockquote class="mt-5 text-lg leading-relaxed text-primary-foreground/90">
+                {verse.translation}
+              </blockquote>
+            )}
+            {verse.reference && (
+              <p class="mt-3 text-sm text-primary-foreground/60">
+                {verse.reference}
+              </p>
+            )}
+          </div>
+        )
+      }
+    </div>
   </section>
 
-  <section aria-labelledby="events-heading">
-    <h2 id="events-heading">{t(lang, 'events.heading')}</h2>
-    {
-      events.length > 0 ? (
-        <ul class="event-grid">
+  {/* Topics */}
+  {
+    topics.length > 0 && (
+      <section class="mx-auto max-w-6xl px-5 py-20">
+        <SectionHeading
+          eyebrow={home.topicsSection.eyebrow}
+          heading={home.topicsSection.heading || t(lang, 'topics.heading')}
+        />
+        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {topics.map((topic) => (
+            <TopicCard
+              title={topic.data.title}
+              url={topicPath(lang, entryKey(topic.id))}
+              description={topic.data.description}
+              icon={topic.data.icon}
+            />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {/* Events */}
+  {
+    events.length > 0 && (
+      <section class="mx-auto max-w-6xl px-5 py-20">
+        <SectionHeading
+          eyebrow={home.eventsSection.eyebrow}
+          heading={home.eventsSection.heading || t(lang, 'events.heading')}
+          ctaLabel={home.eventsSection.ctaLabel || t(lang, 'events.viewAll')}
+          ctaUrl={`/${lang}/events/`}
+        />
+        <div class="mt-10 grid gap-5 md:grid-cols-3">
           {events.map((event) => (
             <EventCard
               title={event.data.title}
               url={eventPath(lang, entryKey(event.id))}
+              category={event.data.category}
               dateISO={event.data.eventDate.toISOString().slice(0, 10)}
               dateFormatted={formatDate(event.data.eventDate, lang)}
+              time={event.data.time}
               location={event.data.location}
               tags={event.data.tags}
+              ctaLabel={t(lang, 'event.details')}
             />
           ))}
-        </ul>
-      ) : (
-        <p>{t(lang, 'events.none')}</p>
-      )
-    }
-    <p><a href={`/${lang}/events/`}>{t(lang, 'events.viewAll')}</a></p>
-  </section>
+        </div>
+      </section>
+    )
+  }
+
+  {/* Articles */}
+  {
+    articles.length > 0 && (
+      <section class="border-y border-border bg-secondary/50">
+        <div class="mx-auto max-w-6xl px-5 py-20">
+          <SectionHeading
+            eyebrow={home.articlesSection.eyebrow}
+            heading={home.articlesSection.heading || t(lang, 'articles.heading')}
+            ctaLabel={t(lang, 'articles.viewAll')}
+            ctaUrl={`/${lang}/articles/`}
+          />
+          <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {articles.map((article) => (
+              <ArticleCard
+                title={article.data.title}
+                url={articlePath(lang, entryKey(article.id))}
+                excerpt={article.data.excerpt}
+                topicLabel={topicTitles.get(article.data.topic) ?? ''}
+                topicUrl={
+                  topicTitles.has(article.data.topic)
+                    ? topicPath(lang, article.data.topic)
+                    : undefined
+                }
+                minutes={article.data.minutes}
+                minutesLabel={t(lang, 'articles.minutes')}
+                ctaLabel={t(lang, 'articles.read')}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* Hadith highlight */}
+  {
+    (hadith.arabic || hadith.translation) && (
+      <section class="mx-auto max-w-6xl px-5 py-20">
+        <div class="relative overflow-hidden rounded-xl border border-gold/30 bg-card p-10 shadow-soft md:p-14">
+          <div class="pattern-lattice absolute inset-0 opacity-40" aria-hidden="true" />
+          <div class="relative mx-auto max-w-3xl text-center">
+            {hadith.eyebrow && (
+              <p class="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                {hadith.eyebrow}
+              </p>
+            )}
+            {hadith.arabic && (
+              <p class="mt-6 font-arabic text-2xl leading-loose" dir="rtl" lang="ar">
+                {hadith.arabic}
+              </p>
+            )}
+            {hadith.translation && (
+              <blockquote class="mt-6 text-2xl leading-relaxed sm:text-3xl">
+                {hadith.translation}
+              </blockquote>
+            )}
+            {hadith.source && (
+              <p class="mt-4 text-sm text-muted-foreground">{hadith.source}</p>
+            )}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* Series */}
+  {
+    series.length > 0 && (
+      <section class="border-t border-border bg-secondary/40">
+        <div class="mx-auto max-w-6xl px-5 py-20">
+          <SectionHeading
+            heading={home.seriesSection.heading || t(lang, 'series.heading')}
+            intro={home.seriesSection.intro}
+            ctaLabel={t(lang, 'series.viewAll')}
+            ctaUrl={`/${lang}/series/`}
+          />
+          <div class="mt-10 grid gap-5 md:grid-cols-3">
+            {series.map((entry) => (
+              <SeriesCard
+                title={entry.data.title}
+                url={seriesPath(lang, entryKey(entry.id))}
+                partsLabel={entry.data.partsLabel}
+                description={entry.data.description}
+                ctaLabel={t(lang, 'series.open')}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {/* Newsletter */}
+  {
+    newsletter.heading && (
+      <section id="newsletter" class="mx-auto max-w-6xl px-5 py-20">
+        <div class="rounded-xl bg-emerald-gradient p-10 text-primary-foreground shadow-lift md:p-14">
+          <div class="grid items-center gap-8 md:grid-cols-[1.2fr_1fr]">
+            <div>
+              <h2 class="text-3xl sm:text-4xl">{newsletter.heading}</h2>
+              {newsletter.text && (
+                <p class="mt-3 max-w-lg text-primary-foreground/80">
+                  {newsletter.text}
+                </p>
+              )}
+            </div>
+
+            {newsletter.actionUrl ? (
+              <form
+                class="flex flex-col gap-3 sm:flex-row"
+                action={newsletter.actionUrl}
+                method="post"
+                target="_blank"
+              >
+                <label class="sr-only" for="newsletter-email">
+                  {t(lang, 'newsletter.emailLabel')}
+                </label>
+                <input
+                  id="newsletter-email"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder={newsletter.placeholder}
+                  class="w-full rounded-md border border-primary-foreground/25 bg-primary-deep/40 px-4 py-3 text-sm text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-gold"
+                />
+                <button
+                  type="submit"
+                  class="rounded-md bg-gold px-5 py-3 text-sm font-semibold text-gold-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+                >
+                  {newsletter.buttonLabel}
+                </button>
+              </form>
+            ) : (
+              newsletter.buttonLabel && (
+                <a
+                  href={resolveUrl(lang, newsletter.fallbackUrl)}
+                  class="inline-flex items-center justify-center gap-2 justify-self-start rounded-md bg-gold px-5 py-3 text-sm font-semibold text-gold-foreground shadow-gold transition-transform hover:-translate-y-0.5"
+                >
+                  {newsletter.buttonLabel}
+                  <Icon name="arrow-right" class="h-4 w-4 rtl:-scale-x-100" />
+                </a>
+              )
+            )}
+          </div>
+        </div>
+      </section>
+    )
+  }
 </BaseLayout>

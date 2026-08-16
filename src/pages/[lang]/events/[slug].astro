@@ -1,5 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
+import Icon from '../../../components/Icon.astro';
+import PageHeader from '../../../components/PageHeader.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import {
   entryKey,
@@ -47,12 +49,28 @@ function toEmbedUrl(url: string): string {
 
 const { entry, alternates } = Astro.props;
 const lang = entryLanguage(entry.id);
-const { title, eventDate, location, tags, videoUrl } = entry.data;
+const { title, eventDate, time, location, category, tags, videoUrl } = entry.data;
 
 const { Content } = await render(entry);
 
 const dateFormatted = formatDate(eventDate, lang);
-const description = `${title} — ${dateFormatted}, ${location}`;
+const description = [title, dateFormatted, location].filter(Boolean).join(' — ');
+
+const meta = [
+  {
+    icon: 'calendar',
+    label: t(lang, 'event.date'),
+    value: dateFormatted,
+    dateISO: eventDate.toISOString().slice(0, 10),
+  },
+  time && { icon: 'clock', label: t(lang, 'event.time'), value: time },
+  location && { icon: 'map-pin', label: t(lang, 'event.location'), value: location },
+].filter(Boolean) as {
+  icon: string;
+  label: string;
+  value: string;
+  dateISO?: string;
+}[];
 ---
 
 <BaseLayout
@@ -61,50 +79,81 @@ const description = `${title} — ${dateFormatted}, ${location}`;
   description={description}
   alternates={alternates}
 >
-  <article>
-    <h1 class="decorated">{title}</h1>
+  <PageHeader eyebrow={category || t(lang, 'events.heading')} title={title} />
 
-    <dl class="event-detail-meta">
-      <dt>{t(lang, 'event.date')}</dt>
-      <dd>
-        <time datetime={eventDate.toISOString().slice(0, 10)}>
-          {dateFormatted}
-        </time>
-      </dd>
-      <dt>{t(lang, 'event.location')}</dt>
-      <dd>{location}</dd>
-    </dl>
+  <div class="mx-auto max-w-6xl px-5 py-16">
+    <div class="grid gap-10 lg:grid-cols-[1fr_18rem]">
+      <article>
+        {
+          videoUrl && (
+            <div class="mb-10 aspect-video overflow-hidden rounded-xl border border-border shadow-soft">
+              <iframe
+                src={toEmbedUrl(videoUrl)}
+                title={`${t(lang, 'event.video')}: ${title}`}
+                loading="lazy"
+                class="h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              />
+            </div>
+          )
+        }
 
-    {
-      tags.length > 0 && (
-        <ul class="tag-list">
-          {tags.map((tag) => (
-            <li class="tag">{tag}</li>
-          ))}
-        </ul>
-      )
-    }
-
-    {
-      videoUrl && (
-        <div class="video-wrapper">
-          <iframe
-            src={toEmbedUrl(videoUrl)}
-            title={`${t(lang, 'event.video')}: ${title}`}
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen
-          />
+        <div class="prose">
+          <Content />
         </div>
-      )
-    }
 
-    <div class="prose">
-      <Content />
+        <a
+          href={`/${lang}/events/`}
+          class="mt-10 inline-flex items-center gap-2 text-sm font-medium text-primary"
+        >
+          <Icon name="arrow-right" class="h-4 w-4 -scale-x-100 rtl:scale-x-100" />
+          {t(lang, 'event.backToEvents')}
+        </a>
+      </article>
+
+      <aside class="lg:sticky lg:top-24 lg:self-start">
+        <div class="rounded-lg border border-border bg-card p-6 shadow-soft">
+          <p class="text-xs uppercase tracking-[0.24em] text-muted-foreground">
+            {t(lang, 'event.details')}
+          </p>
+          <dl class="mt-5 space-y-4 text-sm">
+            {
+              meta.map((item) => (
+                <div class="flex items-start gap-3">
+                  <span class="mt-0.5 text-gold">
+                    <Icon name={item.icon} class="h-4 w-4" />
+                  </span>
+                  <div>
+                    <dt class="text-xs uppercase tracking-wide text-muted-foreground">
+                      {item.label}
+                    </dt>
+                    <dd class="mt-0.5">
+                      {item.dateISO ? (
+                        <time datetime={item.dateISO}>{item.value}</time>
+                      ) : (
+                        item.value
+                      )}
+                    </dd>
+                  </div>
+                </div>
+              ))
+            }
+          </dl>
+
+          {
+            tags.length > 0 && (
+              <ul class="mt-6 flex flex-wrap gap-2 border-t border-border pt-5">
+                {tags.map((tag) => (
+                  <li class="rounded-full bg-secondary px-2.5 py-0.5 text-xs text-secondary-foreground">
+                    {tag}
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+        </div>
+      </aside>
     </div>
-  </article>
-
-  <a class="back-link" href={`/${lang}/events/`}>
-    {t(lang, 'event.backToEvents')}
-  </a>
+  </div>
 </BaseLayout>
