@@ -1,9 +1,10 @@
 ---
-title: "Paaston fiqh -työpaja"
+title: Paaston fiqh -työpaja
 eventDate: 2026-09-05
-time: "14:00-16:00"
-location: "Yhteisökeskus"
-category: "Työpaja"
+time: 14:00-16:00
+location: Yhteisökeskus
+category: Työpaja
+videoUrl: https://www.youtube.com/watch?v=EEKWnUjB40w&list=PLX6yQAjLSYU4W9hqhe7DBpy94QApna2o_
 tags:
   - Fiqh
   - Workshop
