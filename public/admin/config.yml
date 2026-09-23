@@ -533,7 +533,7 @@ collections:
         widget: object
         required: false
         collapsed: true
-        i18n: duplicate
+        i18n: true
         hint: 'Cookie-free analytics. Fill in one of them; leave both empty to turn statistics off.'
         fields:
           - label: GoatCounter code
