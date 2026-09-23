@@ -185,13 +185,65 @@ collections:
         date_format: 'YYYY-MM-DD'
         time_format: false
         i18n: duplicate
+      - label: End date
+        name: endDate
+        widget: datetime
+        format: 'YYYY-MM-DD'
+        date_format: 'YYYY-MM-DD'
+        time_format: false
+        required: false
+        i18n: duplicate
+        hint: 'Only for events lasting more than one day. The event is listed as upcoming until this date.'
       - label: Time
         name: time
         widget: string
         required: false
         i18n: true
-        hint: 'Free text, e.g. "After Maghrib" or "14:00 - 16:00". Optional.'
-      - { label: Location, name: location, widget: string, i18n: true }
+        hint: 'Free text shown to visitors, e.g. "After Maghrib" or "14:00 - 16:00". Optional.'
+      - label: Start time (for calendars)
+        name: startTime
+        widget: string
+        required: false
+        i18n: duplicate
+        pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Use 24-hour HH:mm, e.g. 18:30']
+        hint: 'Optional, 24-hour HH:mm in Finnish time. Used by "Add to calendar" and Google. Leave empty for an all-day event.'
+      - label: End time (for calendars)
+        name: endTime
+        widget: string
+        required: false
+        i18n: duplicate
+        pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'Use 24-hour HH:mm, e.g. 20:00']
+      - { label: Location, name: location, widget: string, i18n: true, hint: 'Venue name, e.g. Community Centre.' }
+      - label: Street address
+        name: address
+        widget: string
+        required: false
+        i18n: duplicate
+        hint: 'e.g. Hämeenkatu 1, 33100 Tampere. Used for the map link and search engines.'
+      - label: Map link
+        name: mapUrl
+        widget: string
+        required: false
+        i18n: duplicate
+        hint: 'Optional Google/Apple Maps link. If empty, the map button searches for the street address.'
+      - label: Online event
+        name: isOnline
+        widget: boolean
+        default: false
+        required: false
+        i18n: duplicate
+      - label: Registration link
+        name: registrationUrl
+        widget: string
+        required: false
+        i18n: duplicate
+        hint: 'Full https:// link to a sign-up form (Google Forms, Eventbrite, …). Shows a Register button.'
+      - label: Cover image
+        name: coverImage
+        widget: image
+        required: false
+        i18n: duplicate
+        hint: 'Shown on the event page and when the link is shared. Landscape, ideally 1200×630.'
       - label: Category
         name: category
         widget: string
@@ -235,15 +287,14 @@ collections:
         hint: 'One or two sentences shown on the article card.'
       - label: Topic
         name: topic
-        widget: select
+        widget: relation
+        collection: topics
+        value_field: '{{slug}}'
+        search_fields: [title]
+        display_fields: [title]
         required: false
         i18n: duplicate
-        options:
-          - { label: Quran, value: quran }
-          - { label: Hadith, value: hadith }
-          - { label: Fiqh, value: fiqh }
-          - { label: Seerah, value: seerah }
-        hint: 'Must match a Topic entry; the article then appears on that topic page.'
+        hint: 'The article then appears on that topic page.'
       - label: Reading time (minutes)
         name: minutes
         widget: number
@@ -368,18 +419,6 @@ collections:
         required: false
         i18n: true
         hint: 'Short summary shown under the title and used by search engines.'
-      - label: Show in menu
-        name: showInNav
-        widget: boolean
-        default: false
-        i18n: duplicate
-        hint: 'Legacy setting — the header menu is now edited in Site settings.'
-      - label: Menu order
-        name: navOrder
-        widget: number
-        value_type: int
-        default: 0
-        i18n: duplicate
       - label: Draft
         name: isDraft
         widget: boolean

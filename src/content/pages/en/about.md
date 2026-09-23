@@ -1,8 +1,6 @@
 ---
 title: "About Iman Corner"
 description: "Who we are, what we publish, and how our material is sourced."
-showInNav: false
-navOrder: 1
 isDraft: false
 ---
 

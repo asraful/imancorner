@@ -13,7 +13,7 @@ import {
   topicPath,
   type Language,
 } from '../../../i18n';
-import { getTopics } from '../../../lib/site';
+import { getSettings, getTopics } from '../../../lib/site';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles', ({ data }) =>
@@ -40,12 +40,30 @@ export async function getStaticPaths() {
 
 const { entry, alternates } = Astro.props;
 const lang = entryLanguage(entry.id);
-const { title, excerpt, topic, minutes, publishDate } = entry.data;
+const { title, excerpt, topic, minutes, publishDate, coverImage } = entry.data;
 
 const { Content } = await render(entry);
 
 const topics = await getTopics(lang);
 const topicEntry = topics.find((item) => entryKey(item.id) === topic);
+
+const { data: settings } = await getSettings(lang);
+const siteName = settings.siteName || t(lang, 'site.name');
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description: excerpt || undefined,
+  url: new URL(articlePath(lang, entryKey(entry.id)), Astro.site).href,
+  inLanguage: lang,
+  datePublished: publishDate?.toISOString().slice(0, 10),
+  image: [new URL(coverImage ?? '/images/site/og-default.jpg', Astro.site).href],
+  articleSection: topicEntry?.data.title,
+  author: { '@type': 'Organization', name: siteName },
+  publisher: { '@type': 'Organization', name: siteName },
+};
+// <-escape so the JSON can never close its own <script> tag
+const jsonLdText = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
 ---
 
 <BaseLayout
@@ -53,7 +71,11 @@ const topicEntry = topics.find((item) => entryKey(item.id) === topic);
   title={title}
   description={excerpt || title}
   alternates={alternates}
+  image={coverImage}
+  type="article"
 >
+  <script slot="head" type="application/ld+json" set:html={jsonLdText} is:inline />
+
   <PageHeader
     eyebrow={topicEntry?.data.title ?? t(lang, 'articles.heading')}
     title={title}

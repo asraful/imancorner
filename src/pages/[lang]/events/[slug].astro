@@ -12,6 +12,8 @@ import {
   t,
   type Language,
 } from '../../../i18n';
+import { eventMapUrl, eventSchedule } from '../../../lib/events';
+import { getSettings, isPastEvent } from '../../../lib/site';
 
 export async function getStaticPaths() {
   const events = await getCollection('events', ({ data }) => isPublished(data));
@@ -49,11 +51,31 @@ function toEmbedUrl(url: string): string {
 
 const { entry, alternates } = Astro.props;
 const lang = entryLanguage(entry.id);
-const { title, eventDate, time, location, category, tags, videoUrl } = entry.data;
+const {
+  title,
+  eventDate,
+  endDate,
+  time,
+  location,
+  address,
+  isOnline,
+  registrationUrl,
+  coverImage,
+  category,
+  tags,
+  videoUrl,
+} = entry.data;
+const key = entryKey(entry.id);
+const isPast = isPastEvent(entry.data);
+const mapUrl = eventMapUrl(entry.data);
+const { data: settings } = await getSettings(lang);
 
 const { Content } = await render(entry);
 
-const dateFormatted = formatDate(eventDate, lang);
+const dateFormatted =
+  endDate && endDate.getTime() !== eventDate.getTime()
+    ? `${formatDate(eventDate, lang)} – ${formatDate(endDate, lang)}`
+    : formatDate(eventDate, lang);
 const description = [title, dateFormatted, location].filter(Boolean).join(' — ');
 
 const meta = [
@@ -64,13 +86,66 @@ const meta = [
     dateISO: eventDate.toISOString().slice(0, 10),
   },
   time && { icon: 'clock', label: t(lang, 'event.time'), value: time },
-  location && { icon: 'map-pin', label: t(lang, 'event.location'), value: location },
+  (location || isOnline) && {
+    icon: 'map-pin',
+    label: t(lang, 'event.location'),
+    value: [location, isOnline && t(lang, 'event.online')].filter(Boolean).join(' · '),
+  },
+  address && { icon: 'compass', label: t(lang, 'event.address'), value: address },
 ].filter(Boolean) as {
   icon: string;
   label: string;
   value: string;
   dateISO?: string;
 }[];
+
+const pageUrl = new URL(eventPath(lang, key), Astro.site).href;
+const schedule = eventSchedule(entry.data);
+const place = location || address
+  ? {
+      '@type': 'Place',
+      name: location || address,
+      ...(address && { address }),
+    }
+  : undefined;
+const virtual = isOnline
+  ? { '@type': 'VirtualLocation', url: registrationUrl ?? pageUrl }
+  : undefined;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Event',
+  name: title,
+  description,
+  url: pageUrl,
+  startDate: schedule.start,
+  endDate: schedule.end,
+  eventStatus: 'https://schema.org/EventScheduled',
+  eventAttendanceMode: isOnline
+    ? place
+      ? 'https://schema.org/MixedEventAttendanceMode'
+      : 'https://schema.org/OnlineEventAttendanceMode'
+    : 'https://schema.org/OfflineEventAttendanceMode',
+  location: [place, virtual].filter(Boolean),
+  image: [new URL(coverImage ?? '/images/site/og-default.jpg', Astro.site).href],
+  inLanguage: lang,
+  organizer: {
+    '@type': 'Organization',
+    name: settings.siteName || t(lang, 'site.name'),
+    url: new URL(`/${lang}/`, Astro.site).href,
+  },
+  ...(registrationUrl && {
+    offers: {
+      '@type': 'Offer',
+      url: registrationUrl,
+      price: 0,
+      priceCurrency: 'EUR',
+      availability: 'https://schema.org/InStock',
+    },
+  }),
+};
+// <-escape so the JSON can never close its own <script> tag
+const jsonLdText = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
 ---
 
 <BaseLayout
@@ -78,12 +153,33 @@ const meta = [
   title={title}
   description={description}
   alternates={alternates}
+  image={coverImage}
 >
+  <script slot="head" type="application/ld+json" set:html={jsonLdText} is:inline />
+
   <PageHeader eyebrow={category || t(lang, 'events.heading')} title={title} />
 
   <div class="mx-auto max-w-6xl px-5 py-16">
     <div class="grid gap-10 lg:grid-cols-[1fr_18rem]">
       <article>
+        {
+          isPast && (
+            <p class="mb-8 rounded-lg border border-gold/40 bg-accent px-5 py-4 text-sm text-accent-foreground">
+              {t(lang, 'event.passed')}
+            </p>
+          )
+        }
+
+        {
+          coverImage && !videoUrl && (
+            <img
+              src={coverImage}
+              alt=""
+              class="mb-10 aspect-video w-full rounded-xl border border-border object-cover shadow-soft"
+            />
+          )
+        }
+
         {
           videoUrl && (
             <div class="mb-10 aspect-video overflow-hidden rounded-xl border border-border shadow-soft">
@@ -140,6 +236,43 @@ const meta = [
               ))
             }
           </dl>
+
+          {
+            !isPast && (
+              <div class="mt-6 flex flex-col gap-2 border-t border-border pt-5">
+                {registrationUrl && (
+                  <a
+                    href={registrationUrl}
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-flex items-center justify-center gap-2 rounded-md bg-emerald-gradient px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5"
+                  >
+                    {t(lang, 'event.register')}
+                    <Icon name="arrow-right" class="h-4 w-4 rtl:-scale-x-100" />
+                  </a>
+                )}
+                <a
+                  href={`${eventPath(lang, key).replace(/\/$/, '')}.ics`}
+                  download={`${key}.ics`}
+                  class="inline-flex items-center justify-center gap-2 rounded-md border border-border bg-secondary px-4 py-2.5 text-sm font-medium text-secondary-foreground transition-colors hover:border-gold/50 hover:bg-accent"
+                >
+                  <Icon name="calendar" class="h-4 w-4" />
+                  {t(lang, 'event.addToCalendar')}
+                </a>
+                {mapUrl && (
+                  <a
+                    href={mapUrl}
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-flex items-center justify-center gap-2 rounded-md border border-border bg-secondary px-4 py-2.5 text-sm font-medium text-secondary-foreground transition-colors hover:border-gold/50 hover:bg-accent"
+                  >
+                    <Icon name="map-pin" class="h-4 w-4" />
+                    {t(lang, 'event.map')}
+                  </a>
+                )}
+              </div>
+            )
+          }
 
           {
             tags.length > 0 && (

@@ -12,6 +12,16 @@ import { defineCollection } from 'astro:content';
 // arrives as a stub with no title; isPublished() in src/i18n keeps those out of
 // the site instead of failing the build.
 
+/** Optional field the CMS may save as an empty string when left blank. */
+function optional<T extends z.ZodType>(schema: T) {
+  return z.preprocess(
+    (value) => (value === '' || value === null ? undefined : value),
+    schema.optional(),
+  );
+}
+
+const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Use HH:mm, e.g. 18:30');
+
 /** A link written in the CMS: label plus a site-relative path or full URL. */
 const link = z.object({
   label: z.string().default(''),
@@ -23,10 +33,21 @@ const events = defineCollection({
   schema: z.object({
     title: z.string().default(''),
     eventDate: z.coerce.date(),
+    /** Last day of a multi-day event; the event counts as upcoming until then. */
+    endDate: optional(z.coerce.date()),
+    /** Display text, e.g. "After Maghrib". */
     time: z.string().default(''),
+    /** Machine-readable start and end (HH:mm, Helsinki time) for calendars and search engines. */
+    startTime: optional(hhmm),
+    endTime: optional(hhmm),
     location: z.string().default(''),
+    address: z.string().default(''),
+    mapUrl: optional(z.url()),
+    isOnline: z.boolean().default(false),
+    registrationUrl: optional(z.url()),
+    coverImage: optional(z.string()),
     category: z.string().default(''),
-    videoUrl: z.string().url().optional(),
+    videoUrl: optional(z.url()),
     tags: z.array(z.string()).default([]),
     isDraft: z.boolean().default(false),
   }),
@@ -41,7 +62,7 @@ const articles = defineCollection({
     topic: z.string().default(''),
     minutes: z.number().default(0),
     publishDate: z.coerce.date().optional(),
-    coverImage: z.string().optional(),
+    coverImage: optional(z.string()),
     isDraft: z.boolean().default(false),
   }),
 });
@@ -75,8 +96,6 @@ const pages = defineCollection({
   schema: z.object({
     title: z.string().default(''),
     description: z.string().optional(),
-    showInNav: z.boolean().default(false),
-    navOrder: z.number().default(0),
     isDraft: z.boolean().default(false),
   }),
 });

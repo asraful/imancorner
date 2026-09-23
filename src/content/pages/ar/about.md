@@ -1,8 +1,6 @@
 ---
 title: "عن ركن الإيمان"
 description: "من نحن، وماذا ننشر، وكيف نوثّق مادتنا."
-showInNav: false
-navOrder: 1
 isDraft: false
 ---
 

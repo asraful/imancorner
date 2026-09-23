@@ -83,3 +83,42 @@ export async function getEvents(lang: Language) {
     (a, b) => a.data.eventDate.getTime() - b.data.eventDate.getTime(),
   );
 }
+
+/** The time zone event dates and times are written in. */
+export const siteTimeZone = 'Europe/Helsinki';
+
+/** Calendar date (YYYY-MM-DD) of a content date, which is stored as UTC midnight. */
+export function isoDay(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+/** Today's date in the site's time zone, as YYYY-MM-DD. */
+export function today(): string {
+  // en-CA formats as YYYY-MM-DD
+  return new Intl.DateTimeFormat('en-CA', { timeZone: siteTimeZone }).format(
+    new Date(),
+  );
+}
+
+/**
+ * Whether an event is over. An event stays upcoming through its last day, so
+ * it is still listed on the day it takes place. Decided at build time; the
+ * deploy workflow rebuilds daily so the split stays current.
+ */
+export function isPastEvent(data: { eventDate: Date; endDate?: Date }): boolean {
+  return isoDay(data.endDate ?? data.eventDate) < today();
+}
+
+/** Events that have not ended yet, soonest first. */
+export async function getUpcomingEvents(lang: Language) {
+  return (await getEvents(lang)).filter((event) => !isPastEvent(event.data));
+}
+
+/** Events that have ended, most recent first. */
+export async function getPastEvents(lang: Language) {
+  return (await getEvents(lang))
+    .filter((event) => isPastEvent(event.data))
+    .reverse();
+}
+
+export type EventEntry = CollectionEntry<'events'>;

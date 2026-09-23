@@ -10,16 +10,14 @@ import {
   type Language,
 } from '../../i18n';
 import { getSettings } from '../../lib/site';
+import { assertContentIntegrity } from '../../lib/validate';
 
 export async function getStaticPaths() {
-  // Slugs already taken by built-in routes; a page with one of these
-  // translation keys would shadow them, so it is skipped.
-  const reserved = new Set(['events', 'articles', 'series', 'topics']);
+  // Fails the build on broken references and on pages whose slug would
+  // shadow a built-in route.
+  await assertContentIntegrity();
 
-  const pages = await getCollection(
-    'pages',
-    (entry) => isPublished(entry.data) && !reserved.has(entryKey(entry.id)),
-  );
+  const pages = await getCollection('pages', (entry) => isPublished(entry.data));
 
   return pages.map((entry) => {
     const key = entryKey(entry.id);
