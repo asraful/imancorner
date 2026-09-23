@@ -2,6 +2,8 @@
 title: "The hadith of intention and what it changes about ordinary work"
 excerpt: "Actions are judged by intention. A close reading of the narration that opens Sahih al-Bukhari."
 topic: hadith
+series: forty-hadith
+seriesPart: 1
 minutes: 6
 publishDate: 2026-07-05
 isDraft: false

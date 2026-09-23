@@ -9,11 +9,12 @@ import {
   entryLanguage,
   formatDate,
   isPublished,
+  seriesPath,
   t,
   topicPath,
   type Language,
 } from '../../../i18n';
-import { getSettings, getTopics } from '../../../lib/site';
+import { getSeries, getSeriesParts, getSettings, getTopics } from '../../../lib/site';
 
 export async function getStaticPaths() {
   const articles = await getCollection('articles', ({ data }) =>
@@ -40,12 +41,21 @@ export async function getStaticPaths() {
 
 const { entry, alternates } = Astro.props;
 const lang = entryLanguage(entry.id);
-const { title, excerpt, topic, minutes, publishDate, coverImage } = entry.data;
+const { title, excerpt, topic, minutes, publishDate, coverImage, series } = entry.data;
 
 const { Content } = await render(entry);
 
 const topics = await getTopics(lang);
 const topicEntry = topics.find((item) => entryKey(item.id) === topic);
+
+const seriesEntry = series
+  ? (await getSeries(lang)).find((item) => entryKey(item.id) === series)
+  : undefined;
+const parts = seriesEntry ? await getSeriesParts(lang, series) : [];
+const partIndex = parts.findIndex((part) => part.id === entry.id);
+const previousPart = partIndex > 0 ? parts[partIndex - 1] : undefined;
+const nextPart = partIndex >= 0 ? parts[partIndex + 1] : undefined;
+const partNumber = entry.data.seriesPart ?? partIndex + 1;
 
 const { data: settings } = await getSettings(lang);
 const siteName = settings.siteName || t(lang, 'site.name');
@@ -71,6 +81,7 @@ const jsonLdText = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
   title={title}
   description={excerpt || title}
   alternates={alternates}
+  searchable
   image={coverImage}
   type="article"
 >
@@ -103,6 +114,17 @@ const jsonLdText = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
         )
       }
       {
+        seriesEntry && (
+          <a
+            href={seriesPath(lang, series)}
+            class="inline-flex items-center gap-2 text-gold transition-opacity hover:opacity-80"
+          >
+            <Icon name="book-open" class="h-4 w-4" />
+            {t(lang, 'series.part')} {partNumber} · {seriesEntry.data.title}
+          </a>
+        )
+      }
+      {
         topicEntry && (
           <a
             href={topicPath(lang, topic)}
@@ -120,6 +142,42 @@ const jsonLdText = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
     <article class="prose">
       <Content />
     </article>
+
+    {
+      (previousPart || nextPart) && (
+        <nav
+          class="mt-12 grid gap-4 sm:grid-cols-2"
+          aria-label={seriesEntry?.data.title}
+        >
+          {previousPart ? (
+            <a
+              href={articlePath(lang, entryKey(previousPart.id))}
+              class="rounded-lg border border-border bg-card p-5 shadow-soft transition-colors hover:border-gold/50"
+            >
+              <span class="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                <Icon name="arrow-right" class="h-3.5 w-3.5 -scale-x-100 rtl:scale-x-100" />
+                {t(lang, 'series.previous')}
+              </span>
+              <span class="mt-2 block text-lg leading-snug">{previousPart.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )}
+          {nextPart && (
+            <a
+              href={articlePath(lang, entryKey(nextPart.id))}
+              class="rounded-lg border border-border bg-card p-5 text-end shadow-soft transition-colors hover:border-gold/50"
+            >
+              <span class="flex items-center justify-end gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                {t(lang, 'series.next')}
+                <Icon name="arrow-right" class="h-3.5 w-3.5 rtl:-scale-x-100" />
+              </span>
+              <span class="mt-2 block text-lg leading-snug">{nextPart.data.title}</span>
+            </a>
+          )}
+        </nav>
+      )
+    }
 
     <a
       href={`/${lang}/articles/`}

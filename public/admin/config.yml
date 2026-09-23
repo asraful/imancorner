@@ -295,6 +295,24 @@ collections:
         required: false
         i18n: duplicate
         hint: 'The article then appears on that topic page.'
+      - label: Series
+        name: series
+        widget: relation
+        collection: series
+        value_field: '{{slug}}'
+        search_fields: [title]
+        display_fields: [title]
+        required: false
+        i18n: duplicate
+        hint: 'Optional. Makes this article a part of a study series.'
+      - label: Part number in the series
+        name: seriesPart
+        widget: number
+        value_type: int
+        min: 1
+        required: false
+        i18n: duplicate
+        hint: 'Parts are listed in this order on the series page, with previous/next links between them.'
       - label: Reading time (minutes)
         name: minutes
         widget: number
@@ -510,3 +528,23 @@ collections:
         widget: string
         required: false
         i18n: true
+      - label: Visitor statistics
+        name: analytics
+        widget: object
+        required: false
+        collapsed: true
+        i18n: duplicate
+        hint: 'Cookie-free analytics. Fill in one of them; leave both empty to turn statistics off.'
+        fields:
+          - label: GoatCounter code
+            name: goatcounterCode
+            widget: string
+            required: false
+            i18n: duplicate
+            hint: 'Only the code — for imancorner.goatcounter.com write "imancorner".'
+          - label: Cloudflare Web Analytics token
+            name: cloudflareToken
+            widget: string
+            required: false
+            i18n: duplicate
+            hint: 'The token value from the snippet Cloudflare shows (data-cf-beacon token).'

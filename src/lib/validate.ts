@@ -2,7 +2,7 @@ import { getCollection } from 'astro:content';
 import { entryKey } from '../i18n';
 
 /** Page slugs taken by built-in routes under /<lang>/. */
-export const reservedPageSlugs = new Set(['events', 'articles', 'series', 'topics']);
+export const reservedPageSlugs = new Set(['events', 'articles', 'series', 'topics', 'search']);
 
 let checked: Promise<void> | undefined;
 
@@ -23,8 +23,17 @@ async function run(): Promise<void> {
   const topicKeys = new Set(
     (await getCollection('topics')).map((topic) => entryKey(topic.id)),
   );
+  const seriesKeys = new Set(
+    (await getCollection('series')).map((entry) => entryKey(entry.id)),
+  );
   for (const article of await getCollection('articles')) {
-    const { topic } = article.data;
+    const { topic, series } = article.data;
+    if (series && !seriesKeys.has(series)) {
+      problems.push(
+        `src/content/articles/${article.id}.md: series "${series}" does not exist ` +
+          `(known series: ${[...seriesKeys].join(', ')}).`,
+      );
+    }
     if (topic && !topicKeys.has(topic)) {
       problems.push(
         `src/content/articles/${article.id}.md: topic "${topic}" does not exist ` +

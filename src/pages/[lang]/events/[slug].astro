@@ -153,6 +153,7 @@ const jsonLdText = JSON.stringify(jsonLd).replace(/</g, '\\u003c');
   title={title}
   description={description}
   alternates={alternates}
+  searchable
   image={coverImage}
 >
   <script slot="head" type="application/ld+json" set:html={jsonLdText} is:inline />

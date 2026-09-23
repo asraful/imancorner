@@ -61,6 +61,10 @@ const articles = defineCollection({
     /** Translation key of an entry in the `topics` collection, e.g. `quran`. */
     topic: z.string().default(''),
     minutes: z.number().default(0),
+    /** Translation key of an entry in the `series` collection, e.g. `forty-hadith`. */
+    series: z.string().default(''),
+    /** Position within the series; parts are listed in this order. */
+    seriesPart: optional(z.number().int().positive()),
     publishDate: z.coerce.date().optional(),
     coverImage: optional(z.string()),
     isDraft: z.boolean().default(false),
@@ -198,6 +202,21 @@ const settings = defineCollection({
       .default([]),
     footerNote: z.string().default(''),
     copyrightName: z.string().default(''),
+    /** Cookie-free visitor statistics; nothing is loaded while both are empty. */
+    analytics: z
+      .object({
+        /** GoatCounter site code: the "mysite" in mysite.goatcounter.com. */
+        goatcounterCode: z
+          .string()
+          .regex(/^[a-z0-9-]*$/, 'Only the code, e.g. imancorner — not the full address')
+          .default(''),
+        /** Cloudflare Web Analytics site token. */
+        cloudflareToken: z
+          .string()
+          .regex(/^[A-Za-z0-9]*$/, 'Paste only the token value')
+          .default(''),
+      })
+      .prefault({}),
   }),
 });
 

@@ -1,0 +1,83 @@
+---
+import PageHeader from '../../components/PageHeader.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { languageCodes, t, type Language } from '../../i18n';
+
+export function getStaticPaths() {
+  return languageCodes.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Language;
+
+const alternates = Object.fromEntries(
+  languageCodes.map((code) => [code, `/${code}/search/`]),
+);
+---
+
+<BaseLayout
+  lang={lang}
+  title={t(lang, 'search.heading')}
+  description={t(lang, 'search.intro')}
+  alternates={alternates}
+>
+  <PageHeader title={t(lang, 'search.heading')} intro={t(lang, 'search.intro')} />
+
+  <div class="mx-auto max-w-3xl px-5 py-16">
+    <div id="search"></div>
+    <p id="search-unavailable" class="text-muted-foreground" hidden>
+      {t(lang, 'search.unavailable')}
+    </p>
+  </div>
+
+  {/*
+    The index and UI are generated into dist/pagefind/ by `pagefind --site dist`
+    after `astro build` (see package.json). Pagefind picks the index for the
+    page's <html lang>, so each language searches only its own content.
+  */}
+  <link slot="head" rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  <script is:inline>
+    (function () {
+      var script = document.createElement('script');
+      script.src = '/pagefind/pagefind-ui.js';
+      script.onload = function () {
+        var ui = new PagefindUI({
+          element: '#search',
+          showSubResults: true,
+          showImages: false,
+          resetStyles: false,
+        });
+        var q = new URLSearchParams(location.search).get('q');
+        if (q) ui.triggerSearch(q);
+        var input = document.querySelector('#search input');
+        if (input) input.focus();
+      };
+      // `astro dev` has no index; say so instead of failing silently.
+      script.onerror = function () {
+        document.getElementById('search-unavailable').hidden = false;
+      };
+      document.head.appendChild(script);
+    })();
+  </script>
+</BaseLayout>
+
+<style is:global>
+  #search {
+    --pagefind-ui-scale: 0.9;
+    --pagefind-ui-primary: var(--primary);
+    --pagefind-ui-text: var(--foreground);
+    --pagefind-ui-background: var(--card);
+    --pagefind-ui-border: var(--border);
+    --pagefind-ui-tag: var(--secondary);
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: var(--radius);
+    --pagefind-ui-font: inherit;
+  }
+  #search .pagefind-ui__result-title,
+  #search .pagefind-ui__result-link {
+    font-family: var(--font-display, inherit);
+  }
+  #search mark {
+    background: color-mix(in oklch, var(--gold) 35%, transparent);
+    color: inherit;
+  }
+</style>
