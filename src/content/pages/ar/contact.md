@@ -1,8 +1,6 @@
 ---
 title: "اتصل بنا"
 description: "كيف تتواصل مع ركن الإيمان بشأن الفعاليات أو التصويبات أو المشاركة."
-showInNav: false
-navOrder: 2
 isDraft: false
 ---
 

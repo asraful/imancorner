@@ -25,6 +25,7 @@ import {
   getSeries,
   getSettings,
   getTopics,
+  getUpcomingEvents,
 } from '../../lib/site';
 
 export function getStaticPaths() {
@@ -45,7 +46,8 @@ const topicTitles = new Map(
   topics.map((topic) => [entryKey(topic.id), topic.data.title]),
 );
 
-const events = (await getEvents(lang)).slice(0, 3);
+const hasEvents = (await getEvents(lang)).length > 0;
+const events = (await getUpcomingEvents(lang)).slice(0, 3);
 const articles = (await getArticles(lang)).slice(0, 6);
 const series = (await getSeries(lang)).slice(0, 3);
 
@@ -182,7 +184,7 @@ const { hero, verse, hadith, newsletter } = home;
 
   {/* Events */}
   {
-    events.length > 0 && (
+    hasEvents && (
       <section class="mx-auto max-w-6xl px-5 py-20">
         <SectionHeading
           eyebrow={home.eventsSection.eyebrow}
@@ -190,21 +192,31 @@ const { hero, verse, hadith, newsletter } = home;
           ctaLabel={home.eventsSection.ctaLabel || t(lang, 'events.viewAll')}
           ctaUrl={`/${lang}/events/`}
         />
-        <div class="mt-10 grid gap-5 md:grid-cols-3">
-          {events.map((event) => (
-            <EventCard
-              title={event.data.title}
-              url={eventPath(lang, entryKey(event.id))}
-              category={event.data.category}
-              dateISO={event.data.eventDate.toISOString().slice(0, 10)}
-              dateFormatted={formatDate(event.data.eventDate, lang)}
-              time={event.data.time}
-              location={event.data.location}
-              tags={event.data.tags}
-              ctaLabel={t(lang, 'event.details')}
-            />
-          ))}
-        </div>
+        {events.length === 0 && (
+          <p class="mt-10 rounded-lg border border-border bg-card p-6 text-muted-foreground shadow-soft">
+            {t(lang, 'events.noneUpcoming')}{' '}
+            <a href={`/${lang}/events/#past`} class="font-medium text-primary hover:underline">
+              {t(lang, 'events.seePast')}
+            </a>
+          </p>
+        )}
+        {events.length > 0 && (
+          <div class="mt-10 grid gap-5 md:grid-cols-3">
+            {events.map((event) => (
+              <EventCard
+                title={event.data.title}
+                url={eventPath(lang, entryKey(event.id))}
+                category={event.data.category}
+                dateISO={event.data.eventDate.toISOString().slice(0, 10)}
+                dateFormatted={formatDate(event.data.eventDate, lang)}
+                time={event.data.time}
+                location={event.data.location}
+                tags={event.data.tags}
+                ctaLabel={t(lang, 'event.details')}
+              />
+            ))}
+          </div>
+        )}
       </section>
     )
   }

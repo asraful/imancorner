@@ -11,7 +11,12 @@ import {
   t,
   type Language,
 } from '../../../i18n';
-import { getEvents, getSettings } from '../../../lib/site';
+import {
+  getPastEvents,
+  getSettings,
+  getUpcomingEvents,
+  type EventEntry,
+} from '../../../lib/site';
 import type { EventListItem } from '../../../scripts/alpine';
 
 export function getStaticPaths() {
@@ -25,9 +30,10 @@ const alternates = Object.fromEntries(
 );
 
 const { data: settings } = await getSettings(lang);
-const events = await getEvents(lang);
+const events = await getUpcomingEvents(lang);
+const pastEvents = await getPastEvents(lang);
 
-const items: EventListItem[] = events.map((event) => {
+function toListItem(event: EventEntry): EventListItem {
   const dateFormatted = formatDate(event.data.eventDate, lang);
 
   return {
@@ -41,7 +47,10 @@ const items: EventListItem[] = events.map((event) => {
     dateFormatted,
     when: event.data.time ? `${dateFormatted} · ${event.data.time}` : dateFormatted,
   };
-});
+}
+
+const items = events.map(toListItem);
+const pastItems = pastEvents.map(toListItem);
 
 const allTags = [...new Set(events.flatMap((event) => event.data.tags))].sort();
 
@@ -59,9 +68,19 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
 
   <div class="mx-auto max-w-6xl px-5 py-16">
     {
-      items.length === 0 ? (
+      items.length === 0 && pastItems.length === 0 ? (
         <p class="text-muted-foreground">{t(lang, 'events.none')}</p>
       ) : (
+        <>
+        <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <h2 class="text-3xl sm:text-4xl">{t(lang, 'events.upcoming')}</h2>
+          <div class="h-[2px] w-32 rule-gold" aria-hidden="true"></div>
+        </div>
+        {items.length === 0 ? (
+          <p class="rounded-lg border border-border bg-card p-6 text-muted-foreground shadow-soft">
+            {t(lang, 'events.noneUpcoming')}
+          </p>
+        ) : (
         <section x-data="eventList">
           <form
             class="flex flex-wrap items-center gap-3"
@@ -191,6 +210,22 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
             is:inline
           />
         </section>
+        )}
+
+        {pastItems.length > 0 && (
+          <section id="past" class="mt-20 scroll-mt-24">
+            <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+              <h2 class="text-3xl sm:text-4xl">{t(lang, 'events.past')}</h2>
+              <div class="h-[2px] w-32 rule-gold" aria-hidden="true"></div>
+            </div>
+            <div class="grid gap-5 opacity-90 md:grid-cols-2 lg:grid-cols-3">
+              {pastItems.map((item) => (
+                <EventCard {...item} ctaLabel={t(lang, 'event.details')} />
+              ))}
+            </div>
+          </section>
+        )}
+        </>
       )
     }
   </div>

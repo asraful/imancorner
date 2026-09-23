@@ -70,8 +70,8 @@ lists the articles whose `topic` matches its filename.
 **Pages** (About, Contact, …; `src/content/pages/`) are published at `/<lang>/<slug>/` by
 `src/pages/[lang]/[slug].astro`. Frontmatter: `title`, `description` (shown under the title
 and used for SEO), `isDraft`. The slugs `events`, `articles`, `series` and `topics` are
-reserved. (`showInNav`/`navOrder` remain in the schema but the menu now comes from Site
-settings.)
+reserved; the build fails if a page uses one. Pages reach the header menu only by being
+linked from Site settings.
 
 **Home** (`src/content/home/<lang>/home.md`) holds every string on the landing page — hero,
 verse of the day, section headings, hadith of the week, newsletter box. **Site settings**

@@ -1,8 +1,6 @@
 ---
 title: "Contact"
 description: "How to reach Iman Corner about events, corrections or contributions."
-showInNav: false
-navOrder: 2
 isDraft: false
 ---
 

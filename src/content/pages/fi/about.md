@@ -1,8 +1,6 @@
 ---
 title: "Tietoa Iman Cornerista"
 description: "Keitä olemme, mitä julkaisemme ja miten materiaalimme on lähteistetty."
-showInNav: false
-navOrder: 1
 isDraft: false
 ---
 

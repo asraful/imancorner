@@ -4,11 +4,20 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Daily rebuild so events move from "upcoming" to "past" without a push.
+  # 03:00 UTC = 05:00/06:00 in Finland.
+  schedule:
+    - cron: '0 3 * * *'
 
 permissions:
   contents: read
   pages: write
   id-token: write
+
+# Never run two deploys at once; a newer push supersedes a queued one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -16,10 +25,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build Astro site
-        uses: withastro/action@v3
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Type-check
+        run: npm run check
+      - name: Build Astro site
+        # Also fails on broken content references (src/lib/validate.ts).
+        run: npm run build
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
 
   deploy:
     needs: build

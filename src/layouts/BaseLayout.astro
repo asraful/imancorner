@@ -11,9 +11,26 @@ interface Props {
   description: string;
   /** Path of this page in each language it exists in (including the current one). */
   alternates?: Partial<Record<Language, string>>;
+  /** Social preview image, site-relative or absolute. */
+  image?: string;
+  /** Open Graph type. */
+  type?: 'website' | 'article';
 }
 
-const { lang, title, description, alternates = {} } = Astro.props;
+const {
+  lang,
+  title,
+  description,
+  alternates = {},
+  image = '/images/site/og-default.jpg',
+  type = 'website',
+} = Astro.props;
+
+const ogLocales: Record<Language, string> = {
+  en: 'en_GB',
+  ar: 'ar_AR',
+  fi: 'fi_FI',
+};
 
 const { data: settings } = await getSettings(lang);
 const siteName = settings.siteName || t(lang, 'site.name');
@@ -24,6 +41,8 @@ const hreflangLinks = (Object.entries(alternates) as [Language, string][]).map(
   ([code, path]) => ({ code, href: new URL(path, site).href }),
 );
 const xDefaultPath = alternates[defaultLanguage];
+const canonical = new URL(Astro.url.pathname, site).href;
+const imageUrl = new URL(image, site).href;
 ---
 
 <!doctype html>
@@ -34,7 +53,14 @@ const xDefaultPath = alternates[defaultLanguage];
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="canonical" href={new URL(Astro.url.pathname, site).href} />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${siteName} — ${t(lang, 'feed.title')}`}
+      href={`/${lang}/rss.xml`}
+    />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -45,9 +71,13 @@ const xDefaultPath = alternates[defaultLanguage];
 
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:locale" content={ogLocales[lang]} />
     <meta property="og:site_name" content={siteName} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={imageUrl} />
 
     {
       hreflangLinks.length > 1 &&
@@ -64,6 +94,7 @@ const xDefaultPath = alternates[defaultLanguage];
         />
       )
     }
+    <slot name="head" />
   </head>
   <body class="min-h-screen bg-parchment">
     <a class="skip-link" href="#main">{t(lang, 'skipLink')}</a>

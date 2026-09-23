@@ -1,8 +1,6 @@
 ---
 title: "Yhteystiedot"
 description: "Miten tavoitat Iman Cornerin tapahtumiin, korjauksiin tai osallistumiseen liittyen."
-showInNav: false
-navOrder: 2
 isDraft: false
 ---
 
