@@ -9,13 +9,20 @@ import {
   articlePath,
   entryKey,
   entryLanguage,
+  formatDuration,
   isPublished,
   seriesPath,
   t,
   topicPath,
   type Language,
 } from '../../../i18n';
-import { getArticles, getSeries, seriesLabel } from '../../../lib/site';
+import {
+  getArticles,
+  getSeries,
+  seriesCoverId,
+  seriesLabel,
+  seriesMinutes,
+} from '../../../lib/site';
 
 export async function getStaticPaths() {
   const topics = await getCollection('topics', ({ data }) => isPublished(data));
@@ -81,6 +88,10 @@ const series = (await getSeries(lang)).filter((entry) => entry.data.topic === ke
                 partsLabel={seriesLabel(entry, lang)}
                 description={entry.data.description}
                 ctaLabel={t(lang, 'series.open')}
+                coverId={seriesCoverId(entry)}
+                duration={
+                  seriesMinutes(entry) > 0 ? formatDuration(lang, seriesMinutes(entry)) : ''
+                }
               />
             ))}
           </div>

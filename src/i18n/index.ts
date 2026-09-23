@@ -81,6 +81,20 @@ const ui = {
     'video.lang.both': 'English & Arabic',
     'video.play': 'Play',
     'video.nowPlaying': 'Now playing',
+    'stats.videos': 'video lessons',
+    'stats.series': 'series',
+    'stats.hours': 'hours of teaching',
+    'lessons.latest': 'Latest lessons',
+    'lessons.latestIntro': 'Recently added recordings, across every series.',
+    'lessons.featured': 'Latest lesson',
+    'lessons.watch': 'Watch',
+    'lessons.scrollBack': 'Scroll back',
+    'lessons.scrollForward': 'Scroll forward',
+    'topics.byTopic': 'Explore by topic',
+    'filter.all': 'All',
+    'filter.other': 'Other',
+    'duration.hours': 'h',
+    'reflection.heading': 'A moment of reflection',
     'topics.heading': 'Topics',
     'topics.explore': 'Explore topic',
     'search.heading': 'Search',
@@ -149,6 +163,20 @@ const ui = {
     'video.lang.both': 'العربية والإنجليزية',
     'video.play': 'تشغيل',
     'video.nowPlaying': 'قيد التشغيل',
+    'stats.videos': 'درسًا مرئيًا',
+    'stats.series': 'سلسلة',
+    'stats.hours': 'ساعة من الدروس',
+    'lessons.latest': 'أحدث الدروس',
+    'lessons.latestIntro': 'أحدث التسجيلات المضافة من جميع السلاسل.',
+    'lessons.featured': 'أحدث درس',
+    'lessons.watch': 'شاهد',
+    'lessons.scrollBack': 'السابق',
+    'lessons.scrollForward': 'التالي',
+    'topics.byTopic': 'تصفّح حسب الباب',
+    'filter.all': 'الكل',
+    'filter.other': 'أخرى',
+    'duration.hours': 'س',
+    'reflection.heading': 'وقفة تأمل',
     'topics.heading': 'الأبواب',
     'topics.explore': 'استكشف الباب',
     'search.heading': 'البحث',
@@ -217,6 +245,20 @@ const ui = {
     'video.lang.both': 'englanti ja arabia',
     'video.play': 'Toista',
     'video.nowPlaying': 'Toistossa',
+    'stats.videos': 'videota',
+    'stats.series': 'sarjaa',
+    'stats.hours': 'tuntia opetusta',
+    'lessons.latest': 'Uusimmat oppitunnit',
+    'lessons.latestIntro': 'Viimeksi lisätyt tallenteet kaikista sarjoista.',
+    'lessons.featured': 'Uusin oppitunti',
+    'lessons.watch': 'Katso',
+    'lessons.scrollBack': 'Vieritä taaksepäin',
+    'lessons.scrollForward': 'Vieritä eteenpäin',
+    'topics.byTopic': 'Selaa aiheittain',
+    'filter.all': 'Kaikki',
+    'filter.other': 'Muut',
+    'duration.hours': 'h',
+    'reflection.heading': 'Hetki pohdintaa',
     'topics.heading': 'Aiheet',
     'topics.explore': 'Tutustu aiheeseen',
     'search.heading': 'Haku',
@@ -248,6 +290,15 @@ export function videoCount(lang: Language, n: number): string {
     default:
       return n === 1 ? '1 video' : `${n} videos`;
   }
+}
+
+/** Running time, e.g. "37 min" or "2 h 5 min". */
+export function formatDuration(lang: Language, minutes: number): string {
+  const min = t(lang, 'articles.minutes');
+  if (minutes < 60) return `${minutes} ${min}`;
+  const h = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return rest ? `${h} ${t(lang, 'duration.hours')} ${rest} ${min}` : `${h} ${t(lang, 'duration.hours')}`;
 }
 
 export function formatDate(date: Date, lang: Language): string {

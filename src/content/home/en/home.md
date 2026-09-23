@@ -4,9 +4,9 @@ hero:
   bismillah: بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
   headingLead: "Islamic knowledge,"
   headingHighlight: clear and well sourced
-  intro: A calm reading library and a living community — Quran, hadith, fiqh and seerah for busy Muslims who want depth without noise, with every claim traced to its source.
-  primaryCta: { label: Start reading, url: /articles/ }
-  secondaryCta: { label: Browse series, url: /series/ }
+  intro: Recorded lessons, a reading library and a living community — Quran, hadith, fiqh and seerah for busy Muslims who want depth without noise.
+  primaryCta: { label: Watch lessons, url: /series/ }
+  secondaryCta: { label: Read articles, url: /articles/ }
   image: /images/site/mecca-hero.jpg
   imageAlt: The Kaaba in Mecca at dawn, with pilgrims in white ihram and warm golden light
 verse:

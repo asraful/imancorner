@@ -4,11 +4,12 @@ siteName: Iman Corner
 siteKicker: Islamilainen tieto
 tagline: Yhteisön tapahtumat, ohjelmat ja huolellisesti lähteistetty islamilainen oppiminen.
 nav:
+  - { label: Oppitunnit, url: /series/ }
   - { label: Koraani, url: /topics/quran/ }
   - { label: Hadith, url: /topics/hadith/ }
-  - { label: Tapahtumat, url: /events/ }
+  - { label: Fiqh, url: /topics/fiqh/ }
   - { label: Artikkelit, url: /articles/ }
-  - { label: Sarjat, url: /series/ }
+  - { label: Tapahtumat, url: /events/ }
   - { label: Tietoa, url: /about/ }
 headerCta: { label: Tilaa, url: /#newsletter }
 footerIntro: Huolellisesti lähteistettyä islamilaista oppimista ja yhteisön ohjelmia, selkeästi ja hyvien tapojen mukaisesti.

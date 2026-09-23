@@ -4,11 +4,12 @@ siteName: Iman Corner
 siteKicker: Islamic Knowledge
 tagline: Community events, programs and carefully sourced Islamic learning.
 nav:
+  - { label: Lessons, url: /series/ }
   - { label: Quran, url: /topics/quran/ }
   - { label: Hadith, url: /topics/hadith/ }
-  - { label: Events, url: /events/ }
+  - { label: Fiqh, url: /topics/fiqh/ }
   - { label: Articles, url: /articles/ }
-  - { label: Series, url: /series/ }
+  - { label: Events, url: /events/ }
   - { label: About, url: /about/ }
 headerCta: { label: Subscribe, url: /#newsletter }
 footerIntro: Carefully sourced Islamic learning and community programs, presented with clarity and adab.

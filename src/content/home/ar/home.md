@@ -4,9 +4,9 @@ hero:
   bismillah: بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
   headingLead: "المعرفة الإسلامية،"
   headingHighlight: واضحة وموثّقة المصادر
-  intro: مكتبة قراءة هادئة ومجتمع حيّ — القرآن والحديث والفقه والسيرة لمن يبحث عن العمق دون ضجيج، مع إسناد كل معلومة إلى مصدرها.
-  primaryCta: { label: ابدأ القراءة, url: /articles/ }
-  secondaryCta: { label: تصفّح السلاسل, url: /series/ }
+  intro: دروس مسجّلة ومكتبة للقراءة ومجتمع حيّ — القرآن والحديث والفقه والسيرة لمن يبحث عن العمق دون ضجيج.
+  primaryCta: { label: شاهد الدروس, url: /series/ }
+  secondaryCta: { label: اقرأ المقالات, url: /articles/ }
   image: /images/site/mecca-hero.jpg
   imageAlt: الكعبة المشرفة في مكة عند الفجر والحجاج بالإحرام الأبيض في ضوء ذهبي دافئ
 verse:

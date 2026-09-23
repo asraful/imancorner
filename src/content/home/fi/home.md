@@ -4,9 +4,9 @@ hero:
   bismillah: بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
   headingLead: "Islamilaista tietoa,"
   headingHighlight: selkeästi ja lähteistettynä
-  intro: Rauhallinen lukukirjasto ja elävä yhteisö — Koraani, hadith, fiqh ja seerah kiireisille muslimeille, jotka haluavat syvyyttä ilman melua, jokainen väite lähteeseensä jäljitettynä.
-  primaryCta: { label: Aloita lukeminen, url: /articles/ }
-  secondaryCta: { label: Selaa sarjoja, url: /series/ }
+  intro: Tallennettuja oppitunteja, lukukirjasto ja elävä yhteisö — Koraani, hadith, fiqh ja seerah kiireisille muslimeille, jotka haluavat syvyyttä ilman melua.
+  primaryCta: { label: Katso oppitunteja, url: /series/ }
+  secondaryCta: { label: Lue artikkeleita, url: /articles/ }
   image: /images/site/mecca-hero.jpg
   imageAlt: Kaaba Mekassa aamunkoitteessa, pyhiinvaeltajat valkoisissa ihram-vaatteissa lämpimässä kultaisessa valossa
 verse:

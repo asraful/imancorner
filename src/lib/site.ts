@@ -3,9 +3,11 @@ import {
   defaultLanguage,
   entryLanguage,
   isPublished,
+  entryKey,
   videoCount,
   type Language,
 } from '../i18n';
+import { youtubeId } from './youtube';
 
 /**
  * Site chrome and the home page are single entries per language. If a
@@ -144,3 +146,63 @@ export async function getPastEvents(lang: Language) {
 }
 
 export type EventEntry = CollectionEntry<'events'>;
+
+export type SeriesEntry = CollectionEntry<'series'>;
+
+/** A video lesson together with the series it belongs to. */
+export interface Lesson {
+  id: string;
+  title: string;
+  url: string;
+  date?: Date;
+  minutes: number;
+  language: 'en' | 'ar' | 'both';
+  /** Position in its series, 1-based. */
+  position: number;
+  seriesKey: string;
+  seriesTitle: string;
+  topic: string;
+}
+
+function lessonsOf(entry: SeriesEntry): Lesson[] {
+  return entry.data.videos.flatMap((video, index) => {
+    const id = youtubeId(video.url);
+    if (!id) return [];
+    return [
+      {
+        ...video,
+        id,
+        position: index + 1,
+        seriesKey: entryKey(entry.id),
+        seriesTitle: entry.data.title,
+        topic: entry.data.topic,
+      },
+    ];
+  });
+}
+
+/** Every video lesson in a language, newest first. */
+export async function getLessons(lang: Language): Promise<Lesson[]> {
+  return (await getSeries(lang))
+    .flatMap(lessonsOf)
+    .sort(
+      (a, b) =>
+        (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0) || b.position - a.position,
+    );
+}
+
+/** Total running time of a series, in minutes. */
+export function seriesMinutes(entry: SeriesEntry): number {
+  return entry.data.videos.reduce((sum, video) => sum + video.minutes, 0);
+}
+
+/** The first video's id, used as the series cover image. */
+export function seriesCoverId(entry: SeriesEntry): string | undefined {
+  const first = entry.data.videos[0];
+  return first ? youtubeId(first.url) : undefined;
+}
+
+/** Link to a series page that opens on one lesson. */
+export function lessonPath(lang: Language, lesson: Pick<Lesson, 'seriesKey' | 'id'>): string {
+  return `/${lang}/series/${lesson.seriesKey}/?v=${lesson.id}#lessons`;
+}

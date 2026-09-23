@@ -14,24 +14,65 @@ export interface EventListItem {
   when: string;
 }
 
+/** One lesson as serialized into the series page for the player. */
+export interface PlaylistLesson {
+  id: string;
+  embed: string;
+  title: string;
+  meta: string;
+}
+
 export default (Alpine: Alpine): void => {
   // Series page player: the lesson list links to YouTube, and with
   // JavaScript a click plays the lesson in the embedded player instead.
+  // ?v=<video id> opens the page on that lesson (used by the home page).
   Alpine.data('videoPlaylist', () => ({
     current: 0,
     src: '',
+    lessons: [] as PlaylistLesson[],
 
     init() {
-      this.src = (this.$el as HTMLElement).dataset.first ?? '';
+      const root = this.$el as HTMLElement;
+      this.lessons = JSON.parse(root.dataset.lessons ?? '[]') as PlaylistLesson[];
+
+      const requested = new URLSearchParams(location.search).get('v');
+      const index = requested ? this.lessons.findIndex((l) => l.id === requested) : -1;
+      if (index > 0) this.current = index;
+      this.src = this.lessons[this.current]?.embed ?? '';
+
+      if (index > 0) this.$nextTick(() => this.revealInList(index));
     },
 
-    play(index: number, embedUrl: string) {
+    get lesson(): PlaylistLesson | undefined {
+      return this.lessons[this.current];
+    },
+
+    play(index: number) {
+      const lesson = this.lessons[index];
+      if (!lesson) return;
       this.current = index;
-      this.src = `${embedUrl}${embedUrl.includes('?') ? '&' : '?'}autoplay=1`;
-      (this.$refs.player as HTMLElement | undefined)?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      });
+      this.src = `${lesson.embed}${lesson.embed.includes('?') ? '&' : '?'}autoplay=1`;
+
+      const url = new URL(location.href);
+      url.searchParams.set('v', lesson.id);
+      history.replaceState(null, '', url);
+
+      // On small screens the list sits below the player; bring it back.
+      const player = this.$refs.player as HTMLElement | undefined;
+      if (player && player.getBoundingClientRect().top < 0) {
+        player.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    },
+
+    next() {
+      this.play(Math.min(this.current + 1, this.lessons.length - 1));
+    },
+
+    /** Scrolls the lesson list (not the page) to show one item. */
+    revealInList(index: number) {
+      const list = this.$refs.list as HTMLElement | undefined;
+      const item = list?.querySelector<HTMLElement>(`[data-index="${index}"]`);
+      if (list && item) list.scrollTop = item.offsetTop - list.offsetTop - 8;
     },
   }));
 

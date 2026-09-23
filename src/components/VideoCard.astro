@@ -1,0 +1,102 @@
+---
+import Icon from './Icon.astro';
+import { youtubeThumbnail } from '../lib/youtube';
+
+/** Thumbnail card for one video lesson, linking to it on its series page. */
+interface Props {
+  href: string;
+  videoId: string;
+  title: string;
+  seriesTitle?: string;
+  duration?: string;
+  meta?: string;
+  /** Larger layout for the featured lesson. */
+  featured?: boolean;
+  /** Light text, for dark backgrounds. */
+  onDark?: boolean;
+  class?: string;
+}
+
+const {
+  href,
+  videoId,
+  title,
+  seriesTitle = '',
+  duration = '',
+  meta = '',
+  featured = false,
+  onDark = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<a href={href} class:list={['group block', className]}>
+  <div
+    class:list={[
+      'relative aspect-video overflow-hidden bg-primary-deep shadow-soft ring-1 ring-black/5',
+      featured ? 'rounded-2xl' : 'rounded-xl',
+    ]}
+  >
+    <img
+      src={youtubeThumbnail(videoId)}
+      alt=""
+      loading={featured ? 'eager' : 'lazy'}
+      decoding="async"
+      width="480"
+      height="360"
+      class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-primary-deep/80 via-primary-deep/10 to-transparent"
+      aria-hidden="true"
+    >
+    </div>
+    <span
+      class:list={[
+        'absolute inset-0 m-auto flex items-center justify-center rounded-full bg-gold text-gold-foreground shadow-gold transition-transform duration-300 group-hover:scale-110',
+        featured ? 'h-16 w-16' : 'h-11 w-11 opacity-90 group-hover:opacity-100',
+      ]}
+      aria-hidden="true"
+    >
+      <Icon name="play" class={featured ? 'ms-1 h-7 w-7' : 'ms-0.5 h-5 w-5'} />
+    </span>
+    {
+      duration && (
+        <span class="absolute bottom-2.5 end-2.5 rounded-md bg-black/70 px-1.5 py-0.5 text-[0.7rem] font-semibold text-white tabular-nums backdrop-blur-sm">
+          {duration}
+        </span>
+      )
+    }
+  </div>
+  <div class:list={[featured ? 'mt-4' : 'mt-3']}>
+    {
+      seriesTitle && (
+        <p class="truncate text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-gold">
+          {seriesTitle}
+        </p>
+      )
+    }
+    <h3
+      dir="auto"
+      class:list={[
+        'mt-1 line-clamp-2 font-sans font-semibold leading-snug transition-colors',
+        onDark ? 'text-primary-foreground group-hover:text-gold' : 'group-hover:text-primary',
+        featured ? 'text-lg' : 'text-[0.95rem]',
+      ]}
+    >
+      {title}
+    </h3>
+    {
+      meta && (
+        <p
+          class:list={[
+            'mt-1 text-xs',
+            onDark ? 'text-primary-foreground/70' : 'text-muted-foreground',
+          ]}
+        >
+          {meta}
+        </p>
+      )
+    }
+  </div>
+</a>

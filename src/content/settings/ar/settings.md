@@ -4,11 +4,12 @@ siteName: ركن الإيمان
 siteKicker: المعرفة الإسلامية
 tagline: فعاليات وبرامج المجتمع وتعلّم إسلامي موثّق المصادر.
 nav:
+  - { label: الدروس, url: /series/ }
   - { label: القرآن, url: /topics/quran/ }
   - { label: الحديث, url: /topics/hadith/ }
-  - { label: الفعاليات, url: /events/ }
+  - { label: الفقه, url: /topics/fiqh/ }
   - { label: المقالات, url: /articles/ }
-  - { label: السلاسل, url: /series/ }
+  - { label: الفعاليات, url: /events/ }
   - { label: من نحن, url: /about/ }
 headerCta: { label: اشترك, url: /#newsletter }
 footerIntro: تعلّم إسلامي موثّق المصادر وبرامج مجتمعية، مقدَّمة بوضوح وأدب.

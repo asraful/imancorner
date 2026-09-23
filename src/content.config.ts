@@ -161,6 +161,12 @@ const home = defineCollection({
         ctaLabel: z.string().default(''),
       })
       .prefault({}),
+    lessonsSection: z
+      .object({
+        eyebrow: z.string().default(''),
+        heading: z.string().default(''),
+      })
+      .prefault({}),
     articlesSection: z
       .object({
         eyebrow: z.string().default(''),

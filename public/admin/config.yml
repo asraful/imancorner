@@ -112,6 +112,15 @@ collections:
           - { label: Heading, name: heading, widget: string, required: false, i18n: true }
           - { label: Link label, name: ctaLabel, widget: string, required: false, i18n: true }
 
+      - label: Latest lessons section
+        name: lessonsSection
+        widget: object
+        i18n: true
+        hint: 'The row of newest videos from all series. Leave empty to use the default heading.'
+        fields:
+          - { label: Small label above heading, name: eyebrow, widget: string, required: false, i18n: true }
+          - { label: Heading, name: heading, widget: string, required: false, i18n: true }
+
       - label: Articles section
         name: articlesSection
         widget: object

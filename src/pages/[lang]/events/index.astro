@@ -136,7 +136,7 @@ const itemsJson = JSON.stringify(items).replace(/</g, '\\u003c');
 
           <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             <template x-for="event in filteredEvents" x-bind:key="event.url">
-              <article class="flex flex-col rounded-lg border border-border bg-card p-6 shadow-soft transition-all hover:-translate-y-1 hover:border-gold/50 hover:shadow-lift">
+              <article class="flex flex-col rounded-2xl border border-border bg-card p-6 shadow-soft transition-all hover:-translate-y-1 hover:border-gold/50 hover:shadow-lift">
                 <div class="flex items-center justify-between gap-3">
                   <span
                     class="rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground"
