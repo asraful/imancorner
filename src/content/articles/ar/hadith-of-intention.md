@@ -2,6 +2,8 @@
 title: "حديث النية وما يغيّره في العمل اليومي"
 excerpt: "إنما الأعمال بالنيات — قراءة متأنية في الحديث الذي افتتح به البخاري صحيحه."
 topic: hadith
+series: forty-hadith
+seriesPart: 1
 minutes: 6
 publishDate: 2026-07-05
 isDraft: false

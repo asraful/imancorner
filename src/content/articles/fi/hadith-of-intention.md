@@ -2,6 +2,8 @@
 title: "Aikomuksen hadith ja mitä se muuttaa tavallisessa työssä"
 excerpt: "Teot arvioidaan aikomuksen mukaan. Tarkka luenta kertomuksesta, joka avaa Sahih al-Bukharin."
 topic: hadith
+series: forty-hadith
+seriesPart: 1
 minutes: 6
 publishDate: 2026-07-05
 isDraft: false

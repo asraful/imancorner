@@ -77,6 +77,20 @@ export async function getArticles(lang: Language) {
   );
 }
 
+/**
+ * Articles that are parts of a series, in part order. Parts without a number
+ * follow the numbered ones, oldest first.
+ */
+export async function getSeriesParts(lang: Language, seriesKey: string) {
+  return (await getPublished('articles', lang))
+    .filter((article) => article.data.series === seriesKey)
+    .sort(
+      (a, b) =>
+        (a.data.seriesPart ?? Infinity) - (b.data.seriesPart ?? Infinity) ||
+        (a.data.publishDate?.getTime() ?? 0) - (b.data.publishDate?.getTime() ?? 0),
+    );
+}
+
 /** Events, soonest first. */
 export async function getEvents(lang: Language) {
   return (await getPublished('events', lang)).sort(

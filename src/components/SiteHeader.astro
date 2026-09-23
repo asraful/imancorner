@@ -75,6 +75,14 @@ const isCurrent = (href: string) =>
     </nav>
 
     <div class="flex items-center gap-2">
+      <a
+        href={`/${lang}/search/`}
+        class="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-primary"
+        aria-label={t(lang, 'search.heading')}
+        title={t(lang, 'search.heading')}
+      >
+        <Icon name="search" class="h-4 w-4" />
+      </a>
       <div class="hidden sm:block">
         <LanguageSwitcher lang={lang} alternates={alternates} />
       </div>

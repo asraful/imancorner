@@ -50,6 +50,7 @@ const articles = (await getArticles(lang)).filter(
   title={title}
   description={description || title}
   alternates={alternates}
+  searchable
 >
   <PageHeader
     eyebrow={t(lang, 'topics.heading')}

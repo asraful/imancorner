@@ -15,6 +15,8 @@ interface Props {
   image?: string;
   /** Open Graph type. */
   type?: 'website' | 'article';
+  /** Whether site search indexes this page (content pages, not listings). */
+  searchable?: boolean;
 }
 
 const {
@@ -24,6 +26,7 @@ const {
   alternates = {},
   image = '/images/site/og-default.jpg',
   type = 'website',
+  searchable = false,
 } = Astro.props;
 
 const ogLocales: Record<Language, string> = {
@@ -33,6 +36,8 @@ const ogLocales: Record<Language, string> = {
 };
 
 const { data: settings } = await getSettings(lang);
+// Analytics is one site-wide setting; read it from the default language.
+const { analytics } = (await getSettings(defaultLanguage)).data;
 const siteName = settings.siteName || t(lang, 'site.name');
 const fullTitle = title === siteName ? title : `${title} · ${siteName}`;
 
@@ -94,12 +99,32 @@ const imageUrl = new URL(image, site).href;
         />
       )
     }
+    {
+      analytics.goatcounterCode && (
+        <script
+          is:inline
+          async
+          data-goatcounter={`https://${analytics.goatcounterCode}.goatcounter.com/count`}
+          src="https://gc.zgo.at/count.js"
+        />
+      )
+    }
+    {
+      analytics.cloudflareToken && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={JSON.stringify({ token: analytics.cloudflareToken })}
+        />
+      )
+    }
     <slot name="head" />
   </head>
   <body class="min-h-screen bg-parchment">
     <a class="skip-link" href="#main">{t(lang, 'skipLink')}</a>
     <SiteHeader lang={lang} alternates={alternates} />
-    <main id="main">
+    <main id="main" data-pagefind-body={searchable ? '' : undefined}>
       <slot />
     </main>
     <SiteFooter lang={lang} />

@@ -52,13 +52,19 @@ An entry's **language and URL slug are derived from its file path** —
 another; that's how the language switcher and hreflang links connect them. Neither value is
 frontmatter.
 
-**Events** (`src/content/events/`) frontmatter: `title`, `eventDate`, `time`, `location`,
-`category` (badge on the card), `videoUrl` (any YouTube link — normalized to the embed form at
-build time), `tags`, `isDraft` (drafts are never published).
+**Events** (`src/content/events/`) frontmatter: `title`, `eventDate`, `endDate` (multi-day
+events), `time` (display text), `startTime`/`endTime` (HH:mm, Finnish time — used by the
+`.ics` "Add to calendar" file and search engines; omit for all-day), `location`, `address`,
+`mapUrl`, `isOnline`, `registrationUrl` (shows a Register button), `coverImage`, `category`
+(badge on the card), `videoUrl` (any YouTube link — normalized to the embed form at build
+time), `tags`, `isDraft` (drafts are never published). An event is *upcoming* through its last
+day (Europe/Helsinki) and moves to *Past* on the daily scheduled rebuild.
 
 **Articles** (`src/content/articles/`) → `/<lang>/articles/<slug>/`: `title`, `excerpt`,
-`topic` (the translation key of a Topics entry, e.g. `quran`), `minutes`, `publishDate`
-(newest first), `isDraft`.
+`topic` (the translation key of a Topics entry, e.g. `quran`), `series` + `seriesPart`
+(optional: makes the article a numbered part of a study series, listed on the series page
+with previous/next links), `minutes`, `publishDate` (newest first), `coverImage`, `isDraft`.
+The build fails if `topic` or `series` names an entry that does not exist.
 
 **Series** (`src/content/series/`) → `/<lang>/series/<slug>/`: `title`, `partsLabel`
 (e.g. "40 parts"), `description`, `order`, `isDraft`.
@@ -189,6 +195,20 @@ the contact page instead of a form.
 Alternative without the CMS: edit the markdown files under `src/content/` directly on
 github.com — same result.
 
+## Search and statistics
+
+**Search** (`/<lang>/search/`, the magnifier in the header) is [Pagefind](https://pagefind.app):
+`npm run build` runs `pagefind --site dist` after Astro, indexing article, event, series,
+topic and standalone pages (those whose layout sets `searchable`), one index per language.
+`npm run dev` has no index, so the search page says it is unavailable there; use
+`npm run build && npm run preview` to try it locally.
+
+**Visitor statistics** are off until a code is entered in *Site settings → Visitor
+statistics*: either a [GoatCounter](https://www.goatcounter.com) site code (free for
+non-commercial use) or a [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/)
+token (free; the existing Cloudflare account works). Both are cookie-free, so no consent
+banner is needed. The value is read from the English settings entry.
+
 ## Local development
 
 ```bash
@@ -213,5 +233,6 @@ npm run check    # type-check
 ## Known open items
 
 - Real competition facts in the microsite repo's `src/data/competition.ts` (placeholders in brackets)
-- Real `videoUrl` for the sample event
+- Newsletter provider not chosen — the Subscribe button links to the Contact page until a form address is set in *Home page → Newsletter box*
+- Visitor statistics code not entered yet (see *Search and statistics*)
 - Decap editorial workflow (draft/review queue) is not enabled — publishes commit straight to `main`
