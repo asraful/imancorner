@@ -1,0 +1,61 @@
+name: Sync YouTube videos
+
+# Adds new videos from youtube.com/@LessonsFromHervanta to the study series
+# (see scripts/youtube-sync.mjs), commits them to main, and deploys.
+on:
+  schedule:
+    # Every 6 hours, off the hour to avoid GitHub's scheduling peak.
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write # commit the new videos
+  actions: write # start the deploy workflow
+
+concurrency:
+  group: youtube-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Look for new videos
+        id: sync
+        run: node scripts/youtube-sync.mjs
+
+      # Never commit content the site cannot build (bad links, schema errors).
+      - name: Check the site still builds
+        if: steps.sync.outputs.changed == 'true'
+        run: npm run build
+
+      - name: Commit and push
+        if: steps.sync.outputs.changed == 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/content/series
+          git commit -m "Add new videos from the YouTube channel"
+          # Someone may have edited in the CMS meanwhile.
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      # Pushes made with the workflow token do not trigger other workflows,
+      # so start the deploy explicitly.
+      - name: Deploy
+        if: steps.sync.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main

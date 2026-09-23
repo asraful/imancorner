@@ -195,6 +195,33 @@ the contact page instead of a form.
 Alternative without the CMS: edit the markdown files under `src/content/` directly on
 github.com — same result.
 
+## Automatic YouTube sync
+
+`.github/workflows/youtube-sync.yml` runs every 6 hours (and on demand from *Actions → Sync
+YouTube videos → Run workflow*). `scripts/youtube-sync.mjs` reads the public RSS feeds of the
+[Lessons from Hervanta](https://www.youtube.com/@LessonsFromHervanta) channel and of each
+playlist — no API key — and appends any video that is not on the site yet to its study series,
+in every language file. The site is then built as a check, committed to `main`, and deployed.
+
+- **Where videos go** is set in `scripts/youtube-sync.config.json`: each playlist id maps to a
+  series slug. A video in no mapped playlist goes to `fallbackSeries` (Different topics) and
+  moves to its real series once it is added to a mapped playlist.
+- **New playlist on the channel?** Create the series in the CMS (Study series → New), then add
+  `"<playlist id>": "<series slug>"` to `playlists`. Until then its videos land in Different
+  topics.
+- **Skipped on purpose:** `ignorePlaylists` / `ignoreVideos` (the Tampere competition
+  recordings live on the event page), Shorts (`includeShorts`), and live streams that are
+  upcoming or still running — they are added after they end.
+- **Editors win:** a video an editor has moved to another series stays there; titles, order and
+  spoken-language labels can be corrected in the CMS and the sync will not undo it. Deleting a
+  video from a series in the CMS does not stick if it is still among the channel's 15 latest —
+  add its id to `ignoreVideos` instead.
+- The feeds only list the 15 most recent videos, so the sync catches up on anything newer than
+  the last run but will not find a video uploaded long ago and never listed. Try it locally with
+  `node scripts/youtube-sync.mjs --dry-run`.
+- GitHub pauses scheduled workflows in repositories with no activity for 60 days; a *Run
+  workflow* click (or any commit) re-enables it.
+
 ## Search and statistics
 
 **Search** (`/<lang>/search/`, the magnifier in the header) is [Pagefind](https://pagefind.app):

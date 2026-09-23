@@ -1,0 +1,33 @@
+{
+  "$comment": "Settings for scripts/youtube-sync.mjs. Map each YouTube playlist to the series (src/content/series/<lang>/<slug>.md) its videos belong in.",
+  "channelId": "UClvLagCfqj_pZl0SmWAdGCw",
+  "fallbackSeries": "different-topics",
+  "playlists": {
+    "PLX6yQAjLSYU77I9wiwsnLsG2CWe3E2cw7": "different-topics",
+    "PLX6yQAjLSYU4NFeoby2gAJxRyOZaEhjOX": "family-fiqh-marriage",
+    "PLX6yQAjLSYU7oCwbaPWDIGCChJDBcKEje": "fasting-rules-with-pictures",
+    "PLX6yQAjLSYU4W9hqhe7DBpy94QApna2o_": "fiqh-of-fasting",
+    "PLX6yQAjLSYU53L6o1Ut6BqBmnT3ADWuun": "fiqh-of-zakah",
+    "PLOqYLQXPGCLc": "fiqh-with-pictures",
+    "PLX6yQAjLSYU42v5oWaVvCVD51ZYWwBl1W": "forty-hadith",
+    "PLX6yQAjLSYU7AahElMZZQitv4tsy8t2oD": "foundations-of-prayer",
+    "PLX6yQAjLSYU5bhAwszuilVf5tig1vAxNU": "hadith-of-the-cave",
+    "PLX6yQAjLSYU49eFW4YZEndyHWeJSZh3fh": "hadith-umm-zar",
+    "PLX6yQAjLSYU6Uh9mrtWlmpCK61cnhoEgL": "learn-arabic",
+    "PLX6yQAjLSYU5Oh95HgPtqY7HrPRdK76V0": "lives-of-the-companions",
+    "PLX6yQAjLSYU63663U742e0xum-koaBGN5": "stories-from-the-quran",
+    "PLX6yQAjLSYU48SJfMWIBLd93ChPm2iSSp": "tafseer-for-kids",
+    "PLX6yQAjLSYU4koV7w6XH9UajeMkCFH0tX": "tafseer-for-kids",
+    "PLX6yQAjLSYU677FlVnn4fiymvdpEX4OOb": "tafseer-short-surahs",
+    "PLX6yQAjLSYU6gd2uWZQllKnnpIjTJC7GA": "the-hajj-journey",
+    "PLX6yQAjLSYU40vQiJJoqamfKNN10vu9jP": "transactions-fiqh"
+  },
+  "ignorePlaylists": {
+    "PLRpEhjNLnMV8": "Tampere Quran competition 2026 — linked from the event page instead"
+  },
+  "ignoreVideos": {
+    "aXm20QydBeg": "Tampere Quran competition final ceremony (event page)",
+    "adztcMf3nvM": "Tampere Quran competition first speech (event page)"
+  },
+  "includeShorts": false
+}
