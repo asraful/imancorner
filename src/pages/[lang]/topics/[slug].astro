@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import ArticleCard from '../../../components/ArticleCard.astro';
+import SeriesCard from '../../../components/SeriesCard.astro';
 import Icon from '../../../components/Icon.astro';
 import PageHeader from '../../../components/PageHeader.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
@@ -9,11 +10,12 @@ import {
   entryKey,
   entryLanguage,
   isPublished,
+  seriesPath,
   t,
   topicPath,
   type Language,
 } from '../../../i18n';
-import { getArticles } from '../../../lib/site';
+import { getArticles, getSeries, seriesLabel } from '../../../lib/site';
 
 export async function getStaticPaths() {
   const topics = await getCollection('topics', ({ data }) => isPublished(data));
@@ -43,6 +45,7 @@ const { Content } = await render(entry);
 const articles = (await getArticles(lang)).filter(
   (article) => article.data.topic === key,
 );
+const series = (await getSeries(lang)).filter((entry) => entry.data.topic === key);
 ---
 
 <BaseLayout
@@ -62,6 +65,28 @@ const articles = (await getArticles(lang)).filter(
     <article class="prose">
       <Content />
     </article>
+
+    {
+      series.length > 0 && (
+        <section class="mt-14">
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <h2 class="text-3xl sm:text-4xl">{t(lang, 'series.inTopic')}</h2>
+            <div class="h-[2px] w-32 rule-gold" aria-hidden="true"></div>
+          </div>
+          <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {series.map((entry) => (
+              <SeriesCard
+                title={entry.data.title}
+                url={seriesPath(lang, entryKey(entry.id))}
+                partsLabel={seriesLabel(entry, lang)}
+                description={entry.data.description}
+                ctaLabel={t(lang, 'series.open')}
+              />
+            ))}
+          </div>
+        </section>
+      )
+    }
 
     <section class="mt-14">
       <div class="flex flex-wrap items-end justify-between gap-4">

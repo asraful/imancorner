@@ -2,7 +2,7 @@
 title: "Names of Allah"
 partsLabel: "99 parts"
 description: "Meaning, evidence and daily du'a"
-order: 2
+order: 99
 isDraft: false
 ---
 

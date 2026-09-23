@@ -15,6 +15,26 @@ export interface EventListItem {
 }
 
 export default (Alpine: Alpine): void => {
+  // Series page player: the lesson list links to YouTube, and with
+  // JavaScript a click plays the lesson in the embedded player instead.
+  Alpine.data('videoPlaylist', () => ({
+    current: 0,
+    src: '',
+
+    init() {
+      this.src = (this.$el as HTMLElement).dataset.first ?? '';
+    },
+
+    play(index: number, embedUrl: string) {
+      this.current = index;
+      this.src = `${embedUrl}${embedUrl.includes('?') ? '&' : '?'}autoplay=1`;
+      (this.$refs.player as HTMLElement | undefined)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    },
+  }));
+
   Alpine.data('eventList', () => ({
     search: '',
     activeTag: '',

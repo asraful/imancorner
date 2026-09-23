@@ -32,6 +32,7 @@ footerColumns:
       - { label: About us, url: /about/ }
       - { label: Contact, url: /contact/ }
       - { label: Corrections, url: /contact/ }
+      - { label: YouTube channel, url: 'https://www.youtube.com/@LessonsFromHervanta' }
 footerNote: Translations are provided for study; always verify with qualified scholars.
 copyrightName: Iman Corner
 ---

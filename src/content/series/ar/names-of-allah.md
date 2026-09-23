@@ -2,7 +2,7 @@
 title: "أسماء الله الحسنى"
 partsLabel: "٩٩ جزءًا"
 description: "المعنى والدليل ودعاء يومي"
-order: 2
+order: 99
 isDraft: false
 ---
 

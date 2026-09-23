@@ -78,6 +78,23 @@ const series = defineCollection({
     /** Short count line shown above the title, e.g. "40 parts". */
     partsLabel: z.string().default(''),
     description: z.string().default(''),
+    /** Translation key of an entry in the `topics` collection; lists the series on that topic page. */
+    topic: z.string().default(''),
+    /** The YouTube playlist the videos come from. */
+    playlistUrl: optional(z.url()),
+    /** Recorded lessons, in watching order. */
+    videos: z
+      .array(
+        z.object({
+          title: z.string(),
+          url: z.url(),
+          date: optional(z.coerce.date()),
+          minutes: z.number().int().nonnegative().default(0),
+          /** Language spoken: en, ar, or both. */
+          language: z.enum(['en', 'ar', 'both']).default('en'),
+        }),
+      )
+      .default([]),
     order: z.number().default(0),
     isDraft: z.boolean().default(false),
   }),

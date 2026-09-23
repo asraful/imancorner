@@ -3,6 +3,7 @@ import {
   defaultLanguage,
   entryLanguage,
   isPublished,
+  videoCount,
   type Language,
 } from '../i18n';
 
@@ -66,6 +67,13 @@ export async function getSeries(lang: Language) {
   return (await getPublished('series', lang)).sort(
     (a, b) => a.data.order - b.data.order,
   );
+}
+
+/** Line above a series title: the editor's label, else the number of videos. */
+export function seriesLabel(entry: CollectionEntry<'series'>, lang: Language): string {
+  const { partsLabel, videos } = entry.data;
+  if (partsLabel) return partsLabel;
+  return videos.length > 0 ? videoCount(lang, videos.length) : '';
 }
 
 /** Articles, newest first; undated entries sort last. */

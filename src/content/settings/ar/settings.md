@@ -32,6 +32,7 @@ footerColumns:
       - { label: من نحن, url: /about/ }
       - { label: اتصل بنا, url: /contact/ }
       - { label: التصويبات, url: /contact/ }
+      - { label: قناة يوتيوب, url: 'https://www.youtube.com/@LessonsFromHervanta' }
 footerNote: الترجمات للدراسة فقط؛ يُرجى دائمًا الرجوع إلى أهل العلم.
 copyrightName: ركن الإيمان
 ---

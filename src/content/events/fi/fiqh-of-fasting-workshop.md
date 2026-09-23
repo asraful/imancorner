@@ -12,3 +12,5 @@ isDraft: false
 ---
 
 Kaksituntinen työpaja ennen ramadania: mikä rikkoo paaston ja mikä ei, matkustaminen ja sairaus, korvauspäivät sekä kysymykset, jotka toistuvat joka vuosi opiskelijoilla, vuorotyöläisillä ja uusilla muslimeilla.
+
+Koko [Paaston fiqh -videosarja](/fi/series/fiqh-of-fasting/) — seitsemän oppituntia — löytyy sivustolta, samoin kuvitettu [Paaston säännöt kuvin](/fi/series/fasting-rules-with-pictures/).

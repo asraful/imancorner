@@ -2,7 +2,7 @@
 title: "Allahin nimet"
 partsLabel: "99 osaa"
 description: "Merkitys, todisteet ja päivittäinen du'a"
-order: 2
+order: 99
 isDraft: false
 ---
 

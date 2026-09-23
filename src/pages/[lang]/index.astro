@@ -23,6 +23,7 @@ import {
   getEvents,
   getHome,
   getSeries,
+  seriesLabel,
   getSettings,
   getTopics,
   getUpcomingEvents,
@@ -302,7 +303,7 @@ const { hero, verse, hadith, newsletter } = home;
               <SeriesCard
                 title={entry.data.title}
                 url={seriesPath(lang, entryKey(entry.id))}
-                partsLabel={entry.data.partsLabel}
+                partsLabel={seriesLabel(entry, lang)}
                 description={entry.data.description}
                 ctaLabel={t(lang, 'series.open')}
               />

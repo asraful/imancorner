@@ -12,3 +12,5 @@ isDraft: false
 ---
 
 A two-hour workshop before Ramadan covering what breaks the fast and what does not, travel and illness, make-up days, and the questions that come up every year for students, shift workers and new Muslims.
+
+The full [Fiqh of fasting video series](/en/series/fiqh-of-fasting/) — seven lessons — is on the site, along with the illustrated [Rules of fasting](/en/series/fasting-rules-with-pictures/).

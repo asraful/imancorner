@@ -72,6 +72,15 @@ const ui = {
     'series.part': 'Part',
     'series.previous': 'Previous part',
     'series.next': 'Next part',
+    'series.videos': 'Video lessons',
+    'series.watchOnYoutube': 'Watch on YouTube',
+    'series.playlist': 'Full playlist on YouTube',
+    'series.inTopic': 'Study series in this topic',
+    'video.lang.en': 'English',
+    'video.lang.ar': 'Arabic',
+    'video.lang.both': 'English & Arabic',
+    'video.play': 'Play',
+    'video.nowPlaying': 'Now playing',
     'topics.heading': 'Topics',
     'topics.explore': 'Explore topic',
     'search.heading': 'Search',
@@ -131,6 +140,15 @@ const ui = {
     'series.part': 'الجزء',
     'series.previous': 'الجزء السابق',
     'series.next': 'الجزء التالي',
+    'series.videos': 'الدروس المرئية',
+    'series.watchOnYoutube': 'شاهد على يوتيوب',
+    'series.playlist': 'قائمة التشغيل كاملة على يوتيوب',
+    'series.inTopic': 'سلاسل دراسية في هذا الباب',
+    'video.lang.en': 'الإنجليزية',
+    'video.lang.ar': 'العربية',
+    'video.lang.both': 'العربية والإنجليزية',
+    'video.play': 'تشغيل',
+    'video.nowPlaying': 'قيد التشغيل',
     'topics.heading': 'الأبواب',
     'topics.explore': 'استكشف الباب',
     'search.heading': 'البحث',
@@ -190,6 +208,15 @@ const ui = {
     'series.part': 'Osa',
     'series.previous': 'Edellinen osa',
     'series.next': 'Seuraava osa',
+    'series.videos': 'Videotunnit',
+    'series.watchOnYoutube': 'Katso YouTubessa',
+    'series.playlist': 'Koko soittolista YouTubessa',
+    'series.inTopic': 'Tämän aiheen opintosarjat',
+    'video.lang.en': 'englanti',
+    'video.lang.ar': 'arabia',
+    'video.lang.both': 'englanti ja arabia',
+    'video.play': 'Toista',
+    'video.nowPlaying': 'Toistossa',
     'topics.heading': 'Aiheet',
     'topics.explore': 'Tutustu aiheeseen',
     'search.heading': 'Haku',
@@ -206,6 +233,21 @@ export type UiKey = keyof (typeof ui)[typeof defaultLanguage];
 
 export function t(lang: Language, key: UiKey): string {
   return ui[lang][key];
+}
+
+/** "12 videos", with each language's plural rules. */
+export function videoCount(lang: Language, n: number): string {
+  switch (lang) {
+    case 'ar':
+      if (n === 1) return 'مقطع واحد';
+      if (n === 2) return 'مقطعان';
+      if (n >= 3 && n <= 10) return `${n} مقاطع`;
+      return `${n} مقطعًا`;
+    case 'fi':
+      return n === 1 ? '1 video' : `${n} videota`;
+    default:
+      return n === 1 ? '1 video' : `${n} videos`;
+  }
 }
 
 export function formatDate(date: Date, lang: Language): string {

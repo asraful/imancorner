@@ -32,6 +32,7 @@ footerColumns:
       - { label: Tietoa meistä, url: /about/ }
       - { label: Yhteystiedot, url: /contact/ }
       - { label: Korjaukset, url: /contact/ }
+      - { label: YouTube-kanava, url: 'https://www.youtube.com/@LessonsFromHervanta' }
 footerNote: Käännökset on tarkoitettu opiskeluun; varmista aina pätevältä oppineelta.
 copyrightName: Iman Corner
 ---

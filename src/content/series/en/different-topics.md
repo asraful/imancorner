@@ -1,0 +1,40 @@
+---
+title: "Different topics"
+description: "Standalone lessons: the day of Arafah, the udhiyah sacrifice, ruqyah and more."
+playlistUrl: https://www.youtube.com/playlist?list=PLX6yQAjLSYU77I9wiwsnLsG2CWe3E2cw7
+videos:
+  - title: "Udhiyah Qurban أضحية"
+    url: https://www.youtube.com/watch?v=urKlKErxvcA
+    date: 2025-06-03
+    minutes: 24
+    language: both
+  - title: "Arafa عرفه"
+    url: https://www.youtube.com/watch?v=EgRLNWghw0M
+    date: 2025-06-04
+    minutes: 25
+    language: both
+  - title: "رقية Rukya"
+    url: https://www.youtube.com/watch?v=iCiVgFgHDBI
+    date: 2026-06-28
+    minutes: 1
+    language: ar
+  - title: "رقية Rukya"
+    url: https://www.youtube.com/watch?v=ZqcIpu196-M
+    date: 2026-06-28
+    minutes: 1
+    language: ar
+  - title: "الرب"
+    url: https://www.youtube.com/watch?v=7QRUwxLnrlo
+    date: 2026-09-20
+    minutes: 10
+    language: ar
+  - title: "الاخلاص"
+    url: https://www.youtube.com/watch?v=BB5j8vhNxrc
+    date: 2026-09-20
+    minutes: 10
+    language: ar
+order: 17
+isDraft: false
+---
+
+Lessons that stand on their own rather than belonging to a series: the day of Arafah, the udhiyah (Eid sacrifice), ruqyah recitations, and recent short lessons.

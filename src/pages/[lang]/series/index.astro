@@ -9,7 +9,7 @@ import {
   t,
   type Language,
 } from '../../../i18n';
-import { getHome, getSeries, getSettings } from '../../../lib/site';
+import { getHome, getSeries, getSettings, seriesLabel } from '../../../lib/site';
 
 export function getStaticPaths() {
   return languageCodes.map((lang) => ({ params: { lang } }));
@@ -48,7 +48,7 @@ const series = await getSeries(lang);
             <SeriesCard
               title={entry.data.title}
               url={seriesPath(lang, entryKey(entry.id))}
-              partsLabel={entry.data.partsLabel}
+              partsLabel={seriesLabel(entry, lang)}
               description={entry.data.description}
               ctaLabel={t(lang, 'series.open')}
             />

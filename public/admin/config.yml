@@ -357,6 +357,51 @@ collections:
         i18n: true
         hint: 'Gold line above the title, e.g. "40 parts".'
       - { label: Description, name: description, widget: text, required: false, i18n: true }
+      - label: Topic
+        name: topic
+        widget: relation
+        collection: topics
+        value_field: '{{slug}}'
+        search_fields: [title]
+        display_fields: [title]
+        required: false
+        i18n: duplicate
+        hint: 'The series is then listed on that topic page.'
+      - label: YouTube playlist
+        name: playlistUrl
+        widget: string
+        required: false
+        i18n: duplicate
+        hint: 'Full playlist link, shown below the video list.'
+      - label: Videos
+        name: videos
+        widget: list
+        required: false
+        i18n: true
+        label_singular: video
+        summary: '{{fields.title}}'
+        hint: 'In watching order. Leave "Parts label" empty to show the number of videos instead.'
+        fields:
+          - { label: Title, name: title, widget: string, i18n: duplicate }
+          - { label: YouTube link, name: url, widget: string, i18n: duplicate }
+          - label: Date
+            name: date
+            widget: datetime
+            format: 'YYYY-MM-DD'
+            date_format: 'YYYY-MM-DD'
+            time_format: false
+            required: false
+            i18n: duplicate
+          - { label: Length (minutes), name: minutes, widget: number, value_type: int, required: false, i18n: duplicate }
+          - label: Spoken language
+            name: language
+            widget: select
+            default: en
+            i18n: duplicate
+            options:
+              - { label: English, value: en }
+              - { label: Arabic, value: ar }
+              - { label: English & Arabic, value: both }
       - label: Order
         name: order
         widget: number

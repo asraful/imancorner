@@ -1,5 +1,6 @@
 import { getCollection } from 'astro:content';
 import { entryKey } from '../i18n';
+import { youtubeId } from './youtube';
 
 /** Page slugs taken by built-in routes under /<lang>/. */
 export const reservedPageSlugs = new Set(['events', 'articles', 'series', 'topics', 'search']);
@@ -39,6 +40,23 @@ async function run(): Promise<void> {
         `src/content/articles/${article.id}.md: topic "${topic}" does not exist ` +
           `(known topics: ${[...topicKeys].join(', ')}).`,
       );
+    }
+  }
+
+  for (const entry of await getCollection('series')) {
+    const { topic } = entry.data;
+    if (topic && !topicKeys.has(topic)) {
+      problems.push(
+        `src/content/series/${entry.id}.md: topic "${topic}" does not exist ` +
+          `(known topics: ${[...topicKeys].join(', ')}).`,
+      );
+    }
+    for (const video of entry.data.videos) {
+      if (!youtubeId(video.url)) {
+        problems.push(
+          `src/content/series/${entry.id}.md: "${video.title}" is not a YouTube link (${video.url}).`,
+        );
+      }
     }
   }
 

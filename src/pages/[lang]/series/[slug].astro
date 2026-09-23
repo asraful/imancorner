@@ -7,11 +7,14 @@ import {
   articlePath,
   entryKey,
   entryLanguage,
+  formatDate,
   isPublished,
   seriesPath,
   t,
+  videoCount,
   type Language,
 } from '../../../i18n';
+import { toEmbedUrl, youtubeId, youtubeThumbnail } from '../../../lib/youtube';
 import { getSeriesParts } from '../../../lib/site';
 
 export async function getStaticPaths() {
@@ -34,11 +37,24 @@ export async function getStaticPaths() {
 
 const { entry, alternates } = Astro.props;
 const lang = entryLanguage(entry.id);
-const { title, description, partsLabel } = entry.data;
+const { title, description, partsLabel, videos, playlistUrl } = entry.data;
 
 const { Content } = await render(entry);
 
 const parts = await getSeriesParts(lang, entryKey(entry.id));
+
+const lessons = videos.map((video) => ({
+  ...video,
+  embedUrl: toEmbedUrl(video.url),
+  id: youtubeId(video.url)!,
+}));
+const firstLesson = lessons[0];
+
+const languageKeys = {
+  en: 'video.lang.en',
+  ar: 'video.lang.ar',
+  both: 'video.lang.both',
+} as const;
 ---
 
 <BaseLayout
@@ -47,9 +63,13 @@ const parts = await getSeriesParts(lang, entryKey(entry.id));
   description={description || title}
   alternates={alternates}
   searchable
+  image={firstLesson && youtubeThumbnail(firstLesson.id)}
 >
   <PageHeader
-    eyebrow={partsLabel || t(lang, 'series.heading')}
+    eyebrow={
+      partsLabel ||
+      (lessons.length > 0 ? videoCount(lang, lessons.length) : t(lang, 'series.heading'))
+    }
     title={title}
     intro={description}
   />
@@ -59,6 +79,89 @@ const parts = await getSeriesParts(lang, entryKey(entry.id));
       <Content />
     </article>
 
+    {
+      firstLesson && (
+        <section class="mt-14" x-data="videoPlaylist" data-first={firstLesson.embedUrl}>
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <h2 class="text-3xl sm:text-4xl">{t(lang, 'series.videos')}</h2>
+            <div class="h-[2px] w-32 rule-gold" aria-hidden="true"></div>
+          </div>
+
+          <div
+            x-ref="player"
+            class="mt-8 aspect-video overflow-hidden rounded-xl border border-border bg-primary-deep shadow-soft"
+          >
+            <iframe
+              src={firstLesson.embedUrl}
+              x-bind:src="src"
+              title={`${t(lang, 'series.videos')}: ${title}`}
+              loading="lazy"
+              class="h-full w-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+            />
+          </div>
+
+          <ol class="mt-6 divide-y divide-border overflow-hidden rounded-lg border border-border bg-card shadow-soft">
+            {lessons.map((lesson, index) => (
+              <li>
+                <a
+                  href={`https://www.youtube.com/watch?v=${lesson.id}`}
+                  target="_blank"
+                  rel="noopener"
+                  x-on:click.prevent={`play(${index}, ${JSON.stringify(lesson.embedUrl)})`}
+                  x-bind:aria-current={`current === ${index} ? 'true' : null`}
+                  x-bind:class={`current === ${index} ? 'bg-accent' : ''`}
+                  class="group flex items-center gap-4 p-4 transition-colors hover:bg-secondary/60"
+                >
+                  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                    {index + 1}
+                  </span>
+                  <span class="min-w-0 flex-1">
+                    <span
+                      class="block leading-snug transition-colors group-hover:text-primary"
+                      dir="auto"
+                    >
+                      {lesson.title}
+                    </span>
+                    <span class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                      <span>{t(lang, languageKeys[lesson.language])}</span>
+                      {lesson.minutes > 0 && (
+                        <span>
+                          {lesson.minutes} {t(lang, 'articles.minutes')}
+                        </span>
+                      )}
+                      {lesson.date && (
+                        <time datetime={lesson.date.toISOString().slice(0, 10)}>
+                          {formatDate(lesson.date, lang)}
+                        </time>
+                      )}
+                    </span>
+                  </span>
+                  <span class="shrink-0 text-gold">
+                    <Icon name="play" class="h-4 w-4 rtl:-scale-x-100" />
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ol>
+
+          {playlistUrl && (
+            <a
+              href={playlistUrl}
+              target="_blank"
+              rel="noopener"
+              class="mt-6 inline-flex items-center gap-2 text-sm font-medium text-primary"
+            >
+              {t(lang, 'series.playlist')}
+              <Icon name="arrow-right" class="h-4 w-4 rtl:-scale-x-100" />
+            </a>
+          )}
+        </section>
+      )
+    }
+
+    {(parts.length > 0 || lessons.length === 0) && (
     <section class="mt-14">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <h2 class="text-3xl sm:text-4xl">{t(lang, 'series.parts')}</h2>
@@ -100,6 +203,7 @@ const parts = await getSeriesParts(lang, entryKey(entry.id));
         )
       }
     </section>
+    )}
 
     <a
       href={`/${lang}/series/`}
