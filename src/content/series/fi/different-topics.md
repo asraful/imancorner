@@ -33,6 +33,16 @@ videos:
     date: 2026-09-20
     minutes: 10
     language: ar
+  - title: "Al-Rab"
+    url: https://www.youtube.com/watch?v=EYU6I0682a8
+    date: 2026-09-24
+    minutes: 0
+    language: en
+  - title: "Ikhlas | Sincerity"
+    url: https://www.youtube.com/watch?v=SNWmmmhb2xo
+    date: 2026-09-24
+    minutes: 0
+    language: en
 order: 17
 isDraft: false
 ---
