@@ -43,6 +43,26 @@ videos:
     date: 2026-09-24
     minutes: 0
     language: en
+  - title: "Muslim morals 2: Takwa | Piety"
+    url: https://www.youtube.com/watch?v=XfR4JjIY9Sg
+    date: 2026-09-28
+    minutes: 0
+    language: en
+  - title: "Names of Allah 2"
+    url: https://www.youtube.com/watch?v=_QfNdBzXb9I
+    date: 2026-09-28
+    minutes: 0
+    language: en
+  - title: "muslimien moraali 2:"
+    url: https://www.youtube.com/watch?v=r4Jd6-yyxWw
+    date: 2026-09-28
+    minutes: 0
+    language: en
+  - title: "Allahin nimet 2:"
+    url: https://www.youtube.com/watch?v=NJ2T5HQmipw
+    date: 2026-09-28
+    minutes: 0
+    language: en
 order: 17
 isDraft: false
 ---
