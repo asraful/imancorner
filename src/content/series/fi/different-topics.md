@@ -63,6 +63,16 @@ videos:
     date: 2026-09-28
     minutes: 0
     language: en
+  - title: "Names of Allah 3: Al-Hay Al-qaiuum"
+    url: https://www.youtube.com/watch?v=1BI75ayfaZc
+    date: 2026-10-05
+    minutes: 0
+    language: en
+  - title: "Morals 3: Al-Tawakwl"
+    url: https://www.youtube.com/watch?v=ML_rtRUNSY4
+    date: 2026-10-05
+    minutes: 0
+    language: en
 order: 17
 isDraft: false
 ---
