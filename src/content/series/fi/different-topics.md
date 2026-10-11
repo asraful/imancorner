@@ -73,6 +73,16 @@ videos:
     date: 2026-10-05
     minutes: 0
     language: en
+  - title: "Allah names: the creator"
+    url: https://www.youtube.com/watch?v=eQzFWBk0cmc
+    date: 2026-10-11
+    minutes: 0
+    language: en
+  - title: "morals: Sabr (patience)"
+    url: https://www.youtube.com/watch?v=7URIls-HcDU
+    date: 2026-10-11
+    minutes: 0
+    language: en
 order: 17
 isDraft: false
 ---
