@@ -83,6 +83,11 @@ videos:
     date: 2026-10-11
     minutes: 0
     language: en
+  - title: "الرحمن الرحيم"
+    url: https://www.youtube.com/watch?v=xxW9fg8-o6k
+    date: 2026-10-17
+    minutes: 0
+    language: ar
 order: 17
 isDraft: false
 ---
