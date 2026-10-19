@@ -88,6 +88,46 @@ videos:
     date: 2026-10-17
     minutes: 0
     language: ar
+  - title: "sabr Fin 1"
+    url: https://www.youtube.com/watch?v=D36rE6afnVw
+    date: 2026-10-19
+    minutes: 0
+    language: en
+  - title: "Tawakul fin 1"
+    url: https://www.youtube.com/watch?v=NSFLSbRac2Q
+    date: 2026-10-19
+    minutes: 0
+    language: en
+  - title: "rida fin1 1"
+    url: https://www.youtube.com/watch?v=9tKdE1KsOG8
+    date: 2026-10-19
+    minutes: 0
+    language: en
+  - title: "malik fin 1"
+    url: https://www.youtube.com/watch?v=RVTcIJqrHgc
+    date: 2026-10-19
+    minutes: 0
+    language: en
+  - title: "Alhay fin 1"
+    url: https://www.youtube.com/watch?v=xF8Sy3QyGhk
+    date: 2026-10-19
+    minutes: 0
+    language: en
+  - title: "kūrėjas"
+    url: https://www.youtube.com/watch?v=Cgj8JtYm1L4
+    date: 2026-10-19
+    minutes: 0
+    language: en
+  - title: "Names of Allah 5 | Al-malik, Al-Malk"
+    url: https://www.youtube.com/watch?v=sXQaJDlocjU
+    date: 2026-10-19
+    minutes: 0
+    language: en
+  - title: "Muslim morals 5 | Contentment, satisfiction"
+    url: https://www.youtube.com/watch?v=-YreCLOGbN8
+    date: 2026-10-19
+    minutes: 0
+    language: en
 order: 17
 isDraft: false
 ---
