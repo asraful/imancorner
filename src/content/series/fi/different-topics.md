@@ -128,6 +128,11 @@ videos:
     date: 2026-10-19
     minutes: 0
     language: en
+  - title: "kūrėjas | Creator | الخالق"
+    url: https://www.youtube.com/watch?v=_SRPszNlBfw
+    date: 2026-11-04
+    minutes: 0
+    language: both
 order: 17
 isDraft: false
 ---
