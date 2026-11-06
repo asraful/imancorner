@@ -133,6 +133,11 @@ videos:
     date: 2026-11-04
     minutes: 0
     language: both
+  - title: "Lessons from Hervanta دروس is live"
+    url: https://www.youtube.com/watch?v=Tuc2HSDY2Cw
+    date: 2026-10-16
+    minutes: 0
+    language: both
 order: 17
 isDraft: false
 ---
